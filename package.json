@@ -1,0 +1,39 @@
+{
+  "name": "unassert",
+  "description": "Remove assertions from AST to encourage Design by Contract (DbC)",
+  "version": "0.1.0",
+  "author": {
+    "name": "Takuto Wada",
+    "email": "takuto.wada@gmail.com",
+    "url": "http://github.com/twada"
+  },
+  "bugs": "https://github.com/twada/unassert/issues",
+  "dependencies": {
+    "escallmatch": "^1.4.1",
+    "estraverse": "^4.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5"
+  },
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "index.js",
+    "package.json"
+  ],
+  "homepage": "http://github.com/twada/unassert",
+  "keywords": [
+    "DbC",
+    "assert",
+    "assertion"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/twada/unassert.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  }
+}
