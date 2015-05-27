@@ -1,7 +1,7 @@
 {
   "name": "unassert",
   "description": "Remove assertions from AST to encourage Design by Contract (DbC)",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
