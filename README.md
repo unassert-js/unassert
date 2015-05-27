@@ -9,10 +9,11 @@ Remove assertions from AST to encourage Design by Contract (DbC)
 [![License][license-image]][license-url]
 
 
-#### RELATED MODULE
+#### RELATED MODULES
 
 - [unassertify](https://github.com/twada/unassertify): Browserify transform to remove assertions on production build
 - [babel-plugin-unassert](https://github.com/twada/babel-plugin-unassert): Babel plugin to remove assertions on build
+- [webpack-unassert-loader](https://github.com/zoncoen/webpack-unassert-loader): A webpack loader to remove assertions on production build
 
 
 INSTALL
