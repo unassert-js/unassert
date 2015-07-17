@@ -1,5 +1,6 @@
 'use strict';
 
+delete require.cache[require.resolve('..')];
 var unassert = require('..');
 var assert = require('assert');
 
