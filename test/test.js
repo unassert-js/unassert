@@ -23,4 +23,6 @@ function testTransform (fixtureName, extraOptions) {
 
 describe('unassert', function () {
     testTransform('func');
+    testTransform('commonjs');
+    testTransform('commonjs_singlevar');
 });
