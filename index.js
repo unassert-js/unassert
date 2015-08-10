@@ -36,7 +36,8 @@ var patterns = [
 var matchers = patterns.map(escallmatch);
 
 var declarationPatterns = [
-    'var assert = require("assert")'
+    'var assert = require("assert")',
+    'var assert = require("power-assert")'
 ];
 var declarationMatchers = [];
 declarationPatterns.forEach(function (dcl) {
