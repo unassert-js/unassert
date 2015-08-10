@@ -32,6 +32,8 @@ For given `math.js` below,
 ```javascript
 'use strict';
 
+var assert = require('assert');
+
 function add (a, b) {
     console.assert(typeof a === 'number');
     assert(!isNaN(a));
@@ -65,6 +67,8 @@ function add(a, b) {
     return a + b;
 }
 ```
+
+Note: unassert supports removal of [power-assert](http://github.com/power-assert-js/power-assert) declarations (`var assert = require('power-assert');`) too.
 
 
 AUTHOR
