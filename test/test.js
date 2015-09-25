@@ -26,4 +26,6 @@ describe('unassert', function () {
     testTransform('commonjs');
     testTransform('commonjs_singlevar');
     testTransform('commonjs_powerassert');
+    testTransform('separated');
+    testTransform('separated_singlevar');
 });

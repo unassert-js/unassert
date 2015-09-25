@@ -60,6 +60,12 @@ function equivalentTree (node) {
     };
 }
 
+function assignmentToDeclaredAssert (node) {
+    return function (example) {
+        return deepEqual(espurify(node.left), example.id) && deepEqual(espurify(node.right), example.init);
+    };
+}
+
 module.exports = function unassert (ast, options) {
     var pathToRemove = {};
     estraverse.replace(ast, {
@@ -69,6 +75,7 @@ module.exports = function unassert (ast, options) {
             case syntax.VariableDeclarator:
                 if (declarationMatchers.some(equivalentTree(currentNode))) {
                     if (parentNode.declarations.length === 1) {
+                        // remove parent VariableDeclaration
                         // body/1/declarations/0 -> body/1
                         espathToRemove = this.path().slice(0, -2).join('/');
                     } else {
@@ -79,8 +86,18 @@ module.exports = function unassert (ast, options) {
                     this.skip();
                 }
                 break;
+            case syntax.AssignmentExpression:
+                if (parentNode.type === syntax.ExpressionStatement &&
+                    declarationMatchers.some(assignmentToDeclaredAssert(currentNode))) {
+                    // remove parent ExpressionStatement
+                    espathToRemove = this.path().slice(0, -1).join('/');
+                    pathToRemove[espathToRemove] = true;
+                    this.skip();
+                }
+                break;
             case syntax.CallExpression:
                 if (matchers.some(matches(currentNode))) {
+                    // remove parent ExpressionStatement
                     // body/1/body/body/0/expression -> body/1/body/body/0
                     espathToRemove = this.path().slice(0, -1).join('/');
                     pathToRemove[espathToRemove] = true;
