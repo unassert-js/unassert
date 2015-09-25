@@ -1,10 +1,18 @@
+## [1.2.0](https://github.com/twada/unassert/releases/tag/v1.2.0) (2015-09-25)
+
+
+#### Features
+
+  * support removal of assert variable assignment ([82cbeea8](https://github.com/twada/unassert/commit/82cbeea801257e2a776a50996666112d96ef42b4))
+
+
 ## [1.1.0](https://github.com/twada/unassert/releases/tag/v1.1.0) (2015-08-11)
 
 
 #### Features
 
-  * remove CommonJS assert declaration ([1c3dc425](https://github.com/twada/unassert/commit/1c3dc425f93f1d8b3790e1ea909a14ff0a6f076f))
-  * remove CommonJS power-assert declaration as well ([5925b38a](https://github.com/twada/unassert/commit/5925b38a351596afab4de2f027fed9dc2ed82602))
+  * support removal of CommonJS assert declaration ([1c3dc425](https://github.com/twada/unassert/commit/1c3dc425f93f1d8b3790e1ea909a14ff0a6f076f))
+  * support removal of CommonJS power-assert declaration ([5925b38a](https://github.com/twada/unassert/commit/5925b38a351596afab4de2f027fed9dc2ed82602))
 
 
 ## [1.0.0](https://github.com/twada/unassert/releases/tag/v1.0.0) (2015-05-27)
