@@ -71,6 +71,28 @@ function add(a, b) {
 Note: unassert supports removal of [power-assert](http://github.com/power-assert-js/power-assert) declarations (`var assert = require('power-assert');`) too.
 
 
+SUPPORTED PATTERNS
+---------------------------------------
+
+Assertion expressions are removed when they match patterns below. In other words, unassert removes assertion calls that are compatible with Node.js standard [assert](http://nodejs.org/api/assert.html) API (and `console.assert`).
+
+* `assert(value, [message])`
+* `assert.ok(value, [message])`
+* `assert.equal(actual, expected, [message])`
+* `assert.notEqual(actual, expected, [message])`
+* `assert.strictEqual(actual, expected, [message])`
+* `assert.notStrictEqual(actual, expected, [message])`
+* `assert.deepEqual(actual, expected, [message])`
+* `assert.notDeepEqual(actual, expected, [message])`
+* `assert.deepStrictEqual(actual, expected, [message])`
+* `assert.notDeepStrictEqual(actual, expected, [message])`
+* `assert.fail(actual, expected, message, operator)`
+* `assert.throws(block, [error], [message])`
+* `assert.doesNotThrow(block, [message])`
+* `assert.ifError(value)`
+* `console.assert(value, [message])`
+
+
 AUTHOR
 ---------------------------------------
 * [Takuto Wada](http://github.com/twada)
