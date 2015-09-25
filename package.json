@@ -16,8 +16,8 @@
     "estraverse": "^4.1.0"
   },
   "devDependencies": {
-    "escodegen": "^1.6.1",
-    "mocha": "^2.2.5"
+    "escodegen": "^1.7.0",
+    "mocha": "^2.3.3"
   },
   "files": [
     "README.md",
