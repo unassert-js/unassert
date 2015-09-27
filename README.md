@@ -92,6 +92,16 @@ Assertion expressions are removed when they match patterns below. In other words
 * `assert.ifError(value)`
 * `console.assert(value, [message])`
 
+unassert also removes assert variable declarations,
+
+* `var assert = require("assert")`
+* `var assert = require("power-assert")`
+
+and assignments.
+
+* `assert = require("assert")`
+* `assert = require("power-assert")`
+
 
 AUTHOR
 ---------------------------------------
