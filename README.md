@@ -1,7 +1,7 @@
 unassert
 ================================
 
-Remove assertions from AST to encourage Design by Contract (DbC)
+Encourage Design by Contract (DbC) by writing assertions in production code, and compiling them away in release
 
 [![Build Status][travis-image]][travis-url]
 [![NPM version][npm-image]][npm-url]

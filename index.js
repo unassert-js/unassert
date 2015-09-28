@@ -1,6 +1,6 @@
 /**
  * unassert
- *   Remove assertions from AST to encourage Design by Contract (DbC)
+ *   Encourage Design by Contract (DbC) by writing assertions in production code, and compiling them away in release
  * 
  * https://github.com/twada/unassert
  *
