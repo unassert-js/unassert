@@ -1,3 +1,11 @@
+### [1.2.1](https://github.com/twada/unassert/releases/tag/v1.2.1) (2015-09-29)
+
+
+#### Bug Fixes
+
+  * remove assignment if and only if operator is `=` ([f14bcd3e](https://github.com/twada/unassert/commit/f14bcd3efd030d33d27ab48f6c89f2ad059cd476))
+
+
 ## [1.2.0](https://github.com/twada/unassert/releases/tag/v1.2.0) (2015-09-25)
 
 
