@@ -62,7 +62,9 @@ function equivalentTree (node) {
 
 function assignmentToDeclaredAssert (node) {
     return function (example) {
-        return deepEqual(espurify(node.left), example.id) && deepEqual(espurify(node.right), example.init);
+        return node.operator === '=' &&
+            deepEqual(espurify(node.left), example.id) &&
+            deepEqual(espurify(node.right), example.init);
     };
 }
 
