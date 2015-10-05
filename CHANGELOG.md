@@ -1,3 +1,11 @@
+## [1.3.0](https://github.com/twada/unassert/releases/tag/v1.3.0) (2015-10-06)
+
+
+#### Features
+
+  * [Support removal of ES6 import declaration](https://github.com/twada/unassert/pull/3)
+
+
 ### [1.2.1](https://github.com/twada/unassert/releases/tag/v1.2.1) (2015-09-29)
 
 
