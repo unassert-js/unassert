@@ -1,7 +1,7 @@
 unassert
 ================================
 
-Encourage Design by Contract (DbC) by writing assertions in production code, and compiling them away in release
+Encourage Design by Contract (DbC) by writing assertions in production code, and compiling them away from release.
 
 [![Build Status][travis-image]][travis-url]
 [![NPM version][npm-image]][npm-url]
