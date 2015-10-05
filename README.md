@@ -96,6 +96,8 @@ unassert also removes assert variable declarations,
 
 * `var assert = require("assert")`
 * `var assert = require("power-assert")`
+* `import assert from "assert"`
+* `import assert from "power-assert"`
 
 and assignments.
 
