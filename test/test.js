@@ -12,7 +12,7 @@ function testTransform (fixtureName, extraOptions) {
     it(fixtureName, function () {
         var fixtureFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'fixture.js');
         var expectedFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
-        var ast = esprima.parse(fs.readFileSync(fixtureFilepath));
+        var ast = esprima.parse(fs.readFileSync(fixtureFilepath),  { sourceType: 'module' });
         // console.log(JSON.stringify(ast, null, 2));
         var modifiedAst = unassert(ast);
         var actual = escodegen.generate(modifiedAst);
@@ -28,4 +28,6 @@ describe('unassert', function () {
     testTransform('commonjs_powerassert');
     testTransform('assignment');
     testTransform('assignment_singlevar');
+    testTransform('es6module');
+    testTransform('es6module_powerassert');
 });

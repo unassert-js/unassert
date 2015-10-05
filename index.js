@@ -36,15 +36,20 @@ var patterns = [
 var matchers = patterns.map(escallmatch);
 
 var declarationPatterns = [
+    'import assert from "assert"',
     'var assert = require("assert")',
+    'import assert from "power-assert"',
     'var assert = require("power-assert")'
 ];
 var declarationMatchers = [];
+var importDeclarationMatchers = [];
 declarationPatterns.forEach(function (dcl) {
     var ast = esprima.parse(dcl, { sourceType:'module' });
     var body0 = ast.body[0];
     if (body0.type === syntax.VariableDeclaration) {
         declarationMatchers.push(espurify(body0.declarations[0]));
+    } else if (body0.type === syntax.ImportDeclaration) {
+        importDeclarationMatchers.push(espurify(body0));
     }
 });
 
@@ -74,6 +79,13 @@ module.exports = function unassert (ast, options) {
         enter: function (currentNode, parentNode) {
             var espathToRemove;
             switch (currentNode.type) {
+            case syntax.ImportDeclaration:
+                if (importDeclarationMatchers.some(equivalentTree(currentNode))) {
+                    espathToRemove = this.path().join('/');
+                    pathToRemove[espathToRemove] = true;
+                    this.skip();
+                }
+                break;
             case syntax.VariableDeclarator:
                 if (declarationMatchers.some(equivalentTree(currentNode))) {
                     if (parentNode.declarations.length === 1) {
