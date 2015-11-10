@@ -8,6 +8,8 @@ Encourage Design by Contract (DbC) by writing assertions in production code, and
 [![Dependency Status][depstat-image]][depstat-url]
 [![License][license-image]][license-url]
 
+See: "[unassert - encourage reliable programming by writing assertions in production](http://www.slideshare.net/t_wada/unassert)" -- talk at NodeFest 2015.
+
 
 #### RELATED MODULES
 
