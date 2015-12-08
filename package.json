@@ -1,6 +1,6 @@
 {
   "name": "unassert",
-  "description": "Encourage Design by Contract (DbC) by writing assertions in production code, and compiling them away from release",
+  "description": "Encourage reliable programming by writing assertions in production code, and compiling them away from release",
   "version": "1.3.0",
   "author": {
     "name": "Takuto Wada",
