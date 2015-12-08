@@ -1,3 +1,11 @@
+### [1.3.1](https://github.com/twada/unassert/releases/tag/v1.3.1) (2015-12-08)
+
+
+#### Bug Fixes
+
+  * remove assertion if and only if its parent is an ExpressionStatement ([6515857a](https://github.com/twada/unassert/commit/6515857a28f96ac6de9a92eeeb97629210c239eb), closes [#4](https://github.com/twada/unassert/issues/4))
+
+
 ## [1.3.0](https://github.com/twada/unassert/releases/tag/v1.3.0) (2015-10-06)
 
 
