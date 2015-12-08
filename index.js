@@ -110,7 +110,7 @@ module.exports = function unassert (ast, options) {
                 }
                 break;
             case syntax.CallExpression:
-                if (matchers.some(matches(currentNode))) {
+                if (parentNode.type === syntax.ExpressionStatement && matchers.some(matches(currentNode))) {
                     // remove parent ExpressionStatement
                     // body/1/body/body/0/expression -> body/1/body/body/0
                     espathToRemove = this.path().slice(0, -1).join('/');

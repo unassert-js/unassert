@@ -30,4 +30,5 @@ describe('unassert', function () {
     testTransform('assignment_singlevar');
     testTransform('es6module');
     testTransform('es6module_powerassert');
+    testTransform('not_an_expression_statement');
 });
