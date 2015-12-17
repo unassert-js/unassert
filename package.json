@@ -28,6 +28,7 @@
   "homepage": "http://github.com/twada/unassert",
   "keywords": [
     "DbC",
+    "unassert",
     "assert",
     "assertion"
   ],
