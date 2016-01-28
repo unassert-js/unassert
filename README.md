@@ -71,13 +71,13 @@ function add(a, b) {
 }
 ```
 
-Note: unassert supports removal of [power-assert](http://github.com/power-assert-js/power-assert) declarations (`var assert = require('power-assert');`) too.
+Note: unassert supports removal of [power-assert](https://github.com/power-assert-js/power-assert) declarations (`var assert = require('power-assert');`) too.
 
 
 SUPPORTED PATTERNS
 ---------------------------------------
 
-Assertion expressions are removed when they match patterns below. In other words, unassert removes assertion calls that are compatible with Node.js standard [assert](http://nodejs.org/api/assert.html) API (and `console.assert`).
+Assertion expressions are removed when they match patterns below. In other words, unassert removes assertion calls that are compatible with Node.js standard [assert](https://nodejs.org/api/assert.html) API (and `console.assert`).
 
 * `assert(value, [message])`
 * `assert.ok(value, [message])`
@@ -110,7 +110,7 @@ and assignments.
 
 AUTHOR
 ---------------------------------------
-* [Takuto Wada](http://github.com/twada)
+* [Takuto Wada](https://github.com/twada)
 
 
 LICENSE
@@ -121,11 +121,11 @@ Licensed under the [MIT](http://twada.mit-license.org/) license.
 [npm-url]: https://npmjs.org/package/unassert
 [npm-image]: https://badge.fury.io/js/unassert.svg
 
-[travis-url]: http://travis-ci.org/twada/unassert
+[travis-url]: https://travis-ci.org/twada/unassert
 [travis-image]: https://secure.travis-ci.org/twada/unassert.svg?branch=master
 
 [depstat-url]: https://gemnasium.com/twada/unassert
 [depstat-image]: https://gemnasium.com/twada/unassert.svg
 
 [license-url]: http://twada.mit-license.org/
-[license-image]: http://img.shields.io/badge/license-MIT-brightgreen.svg
+[license-image]: https://img.shields.io/badge/license-MIT-brightgreen.svg
