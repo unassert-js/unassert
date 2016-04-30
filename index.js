@@ -37,8 +37,10 @@ var matchers = patterns.map(escallmatch);
 
 var declarationPatterns = [
     'import assert from "assert"',
+    'import * as assert from "assert"',
     'var assert = require("assert")',
     'import assert from "power-assert"',
+    'import * as assert from "power-assert"',
     'var assert = require("power-assert")'
 ];
 var declarationMatchers = [];
