@@ -1,3 +1,11 @@
+## [1.4.0](https://github.com/twada/unassert/releases/tag/v1.4.0) (2016-05-02)
+
+
+#### Features
+
+* [Support ImportNamespaceSpecifier](https://github.com/twada/unassert/pull/6)
+
+
 ### [1.3.1](https://github.com/twada/unassert/releases/tag/v1.3.1) (2015-12-08)
 
 
