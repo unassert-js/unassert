@@ -15,6 +15,7 @@ var syntax = estraverse.Syntax;
 var escallmatch = require('escallmatch');
 var espurify = require('espurify');
 var esprima = require('esprima');
+var esutils = require('esutils');
 var deepEqual = require('deep-equal');
 var patterns = [
     'assert(value, [message])',
@@ -123,9 +124,23 @@ module.exports = function unassert (ast, options) {
             }
         },
         leave: function (currentNode, parentNode) {
-            if (this.path() && pathToRemove[this.path().join('/')]) {
-                this.remove();
+            var path = this.path();
+            if (path && pathToRemove[path.join('/')]) {
+                var key = path[path.length - 1];
+                if (currentNode.type === syntax.ExpressionStatement &&
+                    currentNode.expression.type === syntax.CallExpression &&
+                    ((parentNode.type === syntax.IfStatement && (key === 'consequent' || key === 'alternate')) || (esutils.ast.isIterationStatement(parentNode) && key === 'body'))
+                   )
+                {
+                    return {
+                        type: syntax.BlockStatement,
+                        body: []
+                    };
+                } else {
+                    this.remove();
+                }
             }
+            return undefined;
         }
     });
     return ast;

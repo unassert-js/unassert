@@ -32,4 +32,5 @@ describe('unassert', function () {
     testTransform('es6module_powerassert');
     testTransform('es6module_namespece');
     testTransform('not_an_expression_statement');
+    testTransform('non_block_statement');
 });
