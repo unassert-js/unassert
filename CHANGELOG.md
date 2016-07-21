@@ -1,3 +1,11 @@
+### [1.4.1](https://github.com/twada/unassert/releases/tag/v1.4.1) (2016-07-22)
+
+
+#### Bug Fixes
+
+* [Add empty block if parent is non-block statement](https://github.com/twada/unassert/pull/8)
+
+
 ## [1.4.0](https://github.com/twada/unassert/releases/tag/v1.4.0) (2016-05-02)
 
 
