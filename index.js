@@ -76,6 +76,20 @@ function assignmentToDeclaredAssert (node) {
     };
 }
 
+function isBodyOfIfStatement (parentNode, key) {
+    return parentNode.type === syntax.IfStatement && (key === 'consequent' || key === 'alternate');
+}
+
+function isBodyOfIterationStatement (parentNode, key) {
+    return esutils.ast.isIterationStatement(parentNode) && key === 'body';
+}
+
+function isNonBlockChildOfIfStatementOrLoop (currentNode, parentNode, key) {
+    return currentNode.type === syntax.ExpressionStatement &&
+        currentNode.expression.type === syntax.CallExpression &&
+        (isBodyOfIfStatement(parentNode, key) || isBodyOfIterationStatement(parentNode, key));
+}
+
 module.exports = function unassert (ast, options) {
     var pathToRemove = {};
     estraverse.replace(ast, {
@@ -127,11 +141,7 @@ module.exports = function unassert (ast, options) {
             var path = this.path();
             if (path && pathToRemove[path.join('/')]) {
                 var key = path[path.length - 1];
-                if (currentNode.type === syntax.ExpressionStatement &&
-                    currentNode.expression.type === syntax.CallExpression &&
-                    ((parentNode.type === syntax.IfStatement && (key === 'consequent' || key === 'alternate')) || (esutils.ast.isIterationStatement(parentNode) && key === 'body'))
-                   )
-                {
+                if (isNonBlockChildOfIfStatementOrLoop(currentNode, parentNode, key)) {
                     return {
                         type: syntax.BlockStatement,
                         body: []
