@@ -15,6 +15,7 @@ var syntax = estraverse.Syntax;
 var escallmatch = require('escallmatch');
 var espurify = require('espurify');
 var esprima = require('esprima');
+var esutils = require('esutils');
 var deepEqual = require('deep-equal');
 var patterns = [
     'assert(value, [message])',
@@ -75,6 +76,20 @@ function assignmentToDeclaredAssert (node) {
     };
 }
 
+function isBodyOfIfStatement (parentNode, key) {
+    return parentNode.type === syntax.IfStatement && (key === 'consequent' || key === 'alternate');
+}
+
+function isBodyOfIterationStatement (parentNode, key) {
+    return esutils.ast.isIterationStatement(parentNode) && key === 'body';
+}
+
+function isNonBlockChildOfIfStatementOrLoop (currentNode, parentNode, key) {
+    return currentNode.type === syntax.ExpressionStatement &&
+        currentNode.expression.type === syntax.CallExpression &&
+        (isBodyOfIfStatement(parentNode, key) || isBodyOfIterationStatement(parentNode, key));
+}
+
 module.exports = function unassert (ast, options) {
     var pathToRemove = {};
     estraverse.replace(ast, {
@@ -123,9 +138,19 @@ module.exports = function unassert (ast, options) {
             }
         },
         leave: function (currentNode, parentNode) {
-            if (this.path() && pathToRemove[this.path().join('/')]) {
-                this.remove();
+            var path = this.path();
+            if (path && pathToRemove[path.join('/')]) {
+                var key = path[path.length - 1];
+                if (isNonBlockChildOfIfStatementOrLoop(currentNode, parentNode, key)) {
+                    return {
+                        type: syntax.BlockStatement,
+                        body: []
+                    };
+                } else {
+                    this.remove();
+                }
             }
+            return undefined;
         }
     });
     return ast;
