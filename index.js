@@ -34,8 +34,6 @@ var patterns = [
     'assert.ifError(value)',
     'console.assert(value, [message])'
 ];
-var matchers = patterns.map(escallmatch);
-
 var declarationPatterns = [
     'import assert from "assert"',
     'import * as assert from "assert"',
@@ -44,17 +42,6 @@ var declarationPatterns = [
     'import * as assert from "power-assert"',
     'var assert = require("power-assert")'
 ];
-var declarationMatchers = [];
-var importDeclarationMatchers = [];
-declarationPatterns.forEach(function (dcl) {
-    var ast = esprima.parse(dcl, { sourceType:'module' });
-    var body0 = ast.body[0];
-    if (body0.type === syntax.VariableDeclaration) {
-        declarationMatchers.push(espurify(body0.declarations[0]));
-    } else if (body0.type === syntax.ImportDeclaration) {
-        importDeclarationMatchers.push(espurify(body0));
-    }
-});
 
 function matches (node) {
     return function (matcher) {
@@ -90,68 +77,83 @@ function isNonBlockChildOfIfStatementOrLoop (currentNode, parentNode, key) {
         (isBodyOfIfStatement(parentNode, key) || isBodyOfIterationStatement(parentNode, key));
 }
 
-module.exports = function unassert (ast, options) {
-    var pathToRemove = {};
-    estraverse.replace(ast, {
-        enter: function (currentNode, parentNode) {
-            var espathToRemove;
-            switch (currentNode.type) {
-            case syntax.ImportDeclaration:
-                if (importDeclarationMatchers.some(equivalentTree(currentNode))) {
-                    espathToRemove = this.path().join('/');
-                    pathToRemove[espathToRemove] = true;
-                    this.skip();
-                }
-                break;
-            case syntax.VariableDeclarator:
-                if (declarationMatchers.some(equivalentTree(currentNode))) {
-                    if (parentNode.declarations.length === 1) {
-                        // remove parent VariableDeclaration
-                        // body/1/declarations/0 -> body/1
-                        espathToRemove = this.path().slice(0, -2).join('/');
-                    } else {
-                        // single var pattern
-                        espathToRemove = this.path().join('/');
-                    }
-                    pathToRemove[espathToRemove] = true;
-                    this.skip();
-                }
-                break;
-            case syntax.AssignmentExpression:
-                if (parentNode.type === syntax.ExpressionStatement &&
-                    declarationMatchers.some(assignmentToDeclaredAssert(currentNode))) {
-                    // remove parent ExpressionStatement
-                    espathToRemove = this.path().slice(0, -1).join('/');
-                    pathToRemove[espathToRemove] = true;
-                    this.skip();
-                }
-                break;
-            case syntax.CallExpression:
-                if (parentNode.type === syntax.ExpressionStatement && matchers.some(matches(currentNode))) {
-                    // remove parent ExpressionStatement
-                    // body/1/body/body/0/expression -> body/1/body/body/0
-                    espathToRemove = this.path().slice(0, -1).join('/');
-                    pathToRemove[espathToRemove] = true;
-                    this.skip();
-                }
-                break;
-            }
-        },
-        leave: function (currentNode, parentNode) {
-            var path = this.path();
-            if (path && pathToRemove[path.join('/')]) {
-                var key = path[path.length - 1];
-                if (isNonBlockChildOfIfStatementOrLoop(currentNode, parentNode, key)) {
-                    return {
-                        type: syntax.BlockStatement,
-                        body: []
-                    };
-                } else {
-                    this.remove();
-                }
-            }
-            return undefined;
+module.exports = function () {
+    var matchers = patterns.map(escallmatch);
+    var declarationMatchers = [];
+    var importDeclarationMatchers = [];
+    declarationPatterns.forEach(function (dcl) {
+        var ast = esprima.parse(dcl, { sourceType:'module' });
+        var body0 = ast.body[0];
+        if (body0.type === syntax.VariableDeclaration) {
+            declarationMatchers.push(espurify(body0.declarations[0]));
+        } else if (body0.type === syntax.ImportDeclaration) {
+            importDeclarationMatchers.push(espurify(body0));
         }
     });
-    return ast;
-};
+
+    return function unassert (ast, options) {
+        var pathToRemove = {};
+        estraverse.replace(ast, {
+            enter: function (currentNode, parentNode) {
+                var espathToRemove;
+                switch (currentNode.type) {
+                case syntax.ImportDeclaration:
+                    if (importDeclarationMatchers.some(equivalentTree(currentNode))) {
+                        espathToRemove = this.path().join('/');
+                        pathToRemove[espathToRemove] = true;
+                        this.skip();
+                    }
+                    break;
+                case syntax.VariableDeclarator:
+                    if (declarationMatchers.some(equivalentTree(currentNode))) {
+                        if (parentNode.declarations.length === 1) {
+                            // remove parent VariableDeclaration
+                            // body/1/declarations/0 -> body/1
+                            espathToRemove = this.path().slice(0, -2).join('/');
+                        } else {
+                            // single var pattern
+                            espathToRemove = this.path().join('/');
+                        }
+                        pathToRemove[espathToRemove] = true;
+                        this.skip();
+                    }
+                    break;
+                case syntax.AssignmentExpression:
+                    if (parentNode.type === syntax.ExpressionStatement &&
+                        declarationMatchers.some(assignmentToDeclaredAssert(currentNode))) {
+                        // remove parent ExpressionStatement
+                        espathToRemove = this.path().slice(0, -1).join('/');
+                        pathToRemove[espathToRemove] = true;
+                        this.skip();
+                    }
+                    break;
+                case syntax.CallExpression:
+                    if (parentNode.type === syntax.ExpressionStatement && matchers.some(matches(currentNode))) {
+                        // remove parent ExpressionStatement
+                        // body/1/body/body/0/expression -> body/1/body/body/0
+                        espathToRemove = this.path().slice(0, -1).join('/');
+                        pathToRemove[espathToRemove] = true;
+                        this.skip();
+                    }
+                    break;
+                }
+            },
+            leave: function (currentNode, parentNode) {
+                var path = this.path();
+                if (path && pathToRemove[path.join('/')]) {
+                    var key = path[path.length - 1];
+                    if (isNonBlockChildOfIfStatementOrLoop(currentNode, parentNode, key)) {
+                        return {
+                            type: syntax.BlockStatement,
+                            body: []
+                        };
+                    } else {
+                        this.remove();
+                    }
+                }
+                return undefined;
+            }
+        });
+        return ast;
+    };
+}();
