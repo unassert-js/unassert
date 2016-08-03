@@ -25,6 +25,7 @@
     "README.md",
     "CHANGELOG.md",
     "index.js",
+    "lib",
     "package.json"
   ],
   "homepage": "https://github.com/twada/unassert",
