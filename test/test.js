@@ -22,6 +22,12 @@ describe('default behavior', function () {
             var actual = escodegen.generate(modifiedAst);
             assert.equal(actual + '\n', expected);
         });
+        it('unassert.createVisitor ' + fixtureName, function () {
+            var ast = esprima.parse(fs.readFileSync(fixtureFilepath),  { sourceType: 'module' });
+            var modifiedAst = estraverse.replace(ast, unassert.createVisitor());
+            var actual = escodegen.generate(modifiedAst);
+            assert.equal(actual + '\n', expected);
+        });
     }
 
     testTransform('func');
