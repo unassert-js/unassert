@@ -53,12 +53,11 @@ function isNonBlockChildOfIfStatementOrLoop (currentNode, parentNode, key) {
         (isBodyOfIfStatement(parentNode, key) || isBodyOfIterationStatement(parentNode, key));
 }
 
-function createVisitor (options) {
+function compileMatchers (options) {
     var config = Object.assign(defaultOptions(), options);
     var assertionMatchers = config.assertionPatterns.map(escallmatch);
     var declarationMatchers = [];
     var importDeclarationMatchers = [];
-
     config.declarationPatterns.forEach(function (dcl) {
         var ast = esprima.parse(dcl, { sourceType:'module' });
         var body0 = ast.body[0];
@@ -68,21 +67,28 @@ function createVisitor (options) {
             importDeclarationMatchers.push(espurify(body0));
         }
     });
+    return {
+        imports: importDeclarationMatchers,
+        requires: declarationMatchers,
+        assertions: assertionMatchers
+    };
+}
 
+function createVisitorByMatchers (matchers) {
     var pathToRemove = {};
     return {
         enter: function (currentNode, parentNode) {
             var espathToRemove;
             switch (currentNode.type) {
             case syntax.ImportDeclaration:
-                if (importDeclarationMatchers.some(equivalentTree(currentNode))) {
+                if (matchers.imports.some(equivalentTree(currentNode))) {
                     espathToRemove = this.path().join('/');
                     pathToRemove[espathToRemove] = true;
                     this.skip();
                 }
                 break;
             case syntax.VariableDeclarator:
-                if (declarationMatchers.some(equivalentTree(currentNode))) {
+                if (matchers.requires.some(equivalentTree(currentNode))) {
                     if (parentNode.declarations.length === 1) {
                         // remove parent VariableDeclaration
                         // body/1/declarations/0 -> body/1
@@ -97,7 +103,7 @@ function createVisitor (options) {
                 break;
             case syntax.AssignmentExpression:
                 if (parentNode.type === syntax.ExpressionStatement &&
-                    declarationMatchers.some(assignmentToDeclaredAssert(currentNode))) {
+                    matchers.requires.some(assignmentToDeclaredAssert(currentNode))) {
                     // remove parent ExpressionStatement
                     espathToRemove = this.path().slice(0, -1).join('/');
                     pathToRemove[espathToRemove] = true;
@@ -106,7 +112,7 @@ function createVisitor (options) {
                 break;
             case syntax.CallExpression:
                 if (parentNode.type === syntax.ExpressionStatement &&
-                    assertionMatchers.some(matches(currentNode))) {
+                    matchers.assertions.some(matches(currentNode))) {
                     // remove parent ExpressionStatement
                     // body/1/body/body/0/expression -> body/1/body/body/0
                     espathToRemove = this.path().slice(0, -1).join('/');
@@ -134,8 +140,14 @@ function createVisitor (options) {
     };
 }
 
+var defaultMatchers = compileMatchers();
+
 function unassert (ast) {
-    return estraverse.replace(ast, createVisitor());
+    return estraverse.replace(ast, createVisitorByMatchers(defaultMatchers));
+}
+
+function createVisitor (options) {
+    return createVisitorByMatchers(compileMatchers(options));
 }
 
 unassert.defaultOptions = defaultOptions;
