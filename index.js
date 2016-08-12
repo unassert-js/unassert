@@ -52,20 +52,20 @@ function isNonBlockChildOfIfStatementOrLoop (currentNode, parentNode, key) {
 function compileMatchers (options) {
     var config = objectAssign(defaultOptions(), options);
     var assertionMatchers = config.assertionPatterns.map(escallmatch);
-    var declarationMatchers = [];
-    var importDeclarationMatchers = [];
+    var requireMatchers = [];
+    var importMatchers = [];
     config.declarationPatterns.forEach(function (dcl) {
         var ast = esprima.parse(dcl, { sourceType:'module' });
         var body0 = ast.body[0];
         if (body0.type === syntax.VariableDeclaration) {
-            declarationMatchers.push(new AstMatcher(body0.declarations[0]));
+            requireMatchers.push(new AstMatcher(body0.declarations[0]));
         } else if (body0.type === syntax.ImportDeclaration) {
-            importDeclarationMatchers.push(new AstMatcher((body0)));
+            importMatchers.push(new AstMatcher((body0)));
         }
     });
     return {
-        imports: importDeclarationMatchers,
-        requires: declarationMatchers,
+        imports: importMatchers,
+        requires: requireMatchers,
         assertions: assertionMatchers
     };
 }
