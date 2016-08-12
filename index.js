@@ -41,13 +41,10 @@ function isNonBlockChildOfIfStatementOrLoop (currentNode, parentNode, key) {
 
 function compileMatchers (options) {
     var config = objectAssign(defaultOptions(), options);
-    var assertionMatchers = config.assertionPatterns.map(escallmatch);
-    var requireMatchers = config.requirePatterns.map(createRequireMatcher);
-    var importMatchers = config.importPatterns.map(createImportMatcher);
     return {
-        imports: importMatchers,
-        requires: requireMatchers,
-        assertions: assertionMatchers
+        imports: config.importPatterns.map(createImportMatcher),
+        requires: config.requirePatterns.map(createRequireMatcher),
+        assertions: config.assertionPatterns.map(escallmatch)
     };
 }
 
