@@ -20,18 +20,11 @@ var objectAssign = require('object-assign');
 var deepEqual = require('deep-equal');
 var defaultOptions = require('./lib/default-options');
 var AstMatcher = require('./lib/ast-matcher');
+var createRequireMatcher = require('./lib/create-require-matcher');
 
 function matches (node) {
     return function (matcher) {
         return matcher.test(node);
-    };
-}
-
-function matchesToDeclaration (id, init) {
-    return function (matcher) {
-        return id && init &&
-            deepEqual(espurify(id), matcher.signatureAst.left) &&
-            deepEqual(espurify(init), matcher.signatureAst.right);
     };
 }
 
@@ -49,29 +42,11 @@ function isNonBlockChildOfIfStatementOrLoop (currentNode, parentNode, key) {
         (isBodyOfIfStatement(parentNode, key) || isBodyOfIterationStatement(parentNode, key));
 }
 
-function extractAssignmentExpressionFrom (tree) {
-    var statement = tree.body[0];
-    var expression;
-    if (statement.type !== syntax.ExpressionStatement) {
-        throw new Error('Argument should be in the form of expression');
-    }
-    expression = statement.expression;
-    if (expression.type !== syntax.AssignmentExpression) {
-        throw new Error('Argument should be in the form of assignment');
-    }
-    return expression;
-}
-
 function compileMatchers (options) {
     var config = objectAssign(defaultOptions(), options);
     var assertionMatchers = config.assertionPatterns.map(escallmatch);
-    var requireMatchers = [];
+    var requireMatchers = config.requirePatterns.map(createRequireMatcher);
     var importMatchers = [];
-    config.requirePatterns.forEach(function (dcl) {
-        var ast = esprima.parse(dcl, { sourceType:'module' });
-        var assignment = extractAssignmentExpressionFrom(ast);
-        requireMatchers.push(new AstMatcher(assignment));
-    });
     config.importPatterns.forEach(function (dcl) {
         var ast = esprima.parse(dcl, { sourceType:'module' });
         var body0 = ast.body[0];
@@ -98,7 +73,7 @@ function createVisitorByMatchers (matchers) {
                 }
                 break;
             case syntax.VariableDeclarator:
-                if (matchers.requires.some(matchesToDeclaration(currentNode.id, currentNode.init))) {
+                if (matchers.requires.some(matches(currentNode))) {
                     if (parentNode.declarations.length === 1) {
                         // remove parent VariableDeclaration
                         // body/1/declarations/0 -> body/1
@@ -113,8 +88,7 @@ function createVisitorByMatchers (matchers) {
                 break;
             case syntax.AssignmentExpression:
                 if (parentNode.type === syntax.ExpressionStatement &&
-                    currentNode.operator === '=' &&
-                    matchers.requires.some(matchesToDeclaration(currentNode.left, currentNode.right))) {
+                    matchers.requires.some(matches(currentNode))) {
                     // remove parent ExpressionStatement
                     espathToRemove = this.path().slice(0, -1).join('/');
                     pathToRemove[espathToRemove] = true;
