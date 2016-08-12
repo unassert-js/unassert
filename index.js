@@ -27,17 +27,11 @@ function matches (node) {
     };
 }
 
-function equivalentTree (node) {
-    return function (example) {
-        return deepEqual(espurify(node), example);
-    };
-}
-
 function assignmentToDeclaredAssert (node) {
-    return function (example) {
+    return function (matcher) {
         return node.operator === '=' &&
-            deepEqual(espurify(node.left), example.id) &&
-            deepEqual(espurify(node.right), example.init);
+            deepEqual(espurify(node.left), matcher.signatureAst.id) &&
+            deepEqual(espurify(node.right), matcher.signatureAst.init);
     };
 }
 
@@ -64,7 +58,7 @@ function compileMatchers (options) {
         var ast = esprima.parse(dcl, { sourceType:'module' });
         var body0 = ast.body[0];
         if (body0.type === syntax.VariableDeclaration) {
-            declarationMatchers.push(espurify(body0.declarations[0]));
+            declarationMatchers.push(new AstMatcher(body0.declarations[0]));
         } else if (body0.type === syntax.ImportDeclaration) {
             importDeclarationMatchers.push(new AstMatcher((body0)));
         }
@@ -90,7 +84,7 @@ function createVisitorByMatchers (matchers) {
                 }
                 break;
             case syntax.VariableDeclarator:
-                if (matchers.requires.some(equivalentTree(currentNode))) {
+                if (matchers.requires.some(matches(currentNode))) {
                     if (parentNode.declarations.length === 1) {
                         // remove parent VariableDeclaration
                         // body/1/declarations/0 -> body/1
