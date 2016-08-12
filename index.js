@@ -13,14 +13,11 @@
 var estraverse = require('estraverse');
 var syntax = estraverse.Syntax;
 var escallmatch = require('escallmatch');
-var espurify = require('espurify');
-var esprima = require('esprima');
 var esutils = require('esutils');
 var objectAssign = require('object-assign');
-var deepEqual = require('deep-equal');
 var defaultOptions = require('./lib/default-options');
-var AstMatcher = require('./lib/ast-matcher');
 var createRequireMatcher = require('./lib/create-require-matcher');
+var createImportMatcher = require('./lib/create-import-matcher');
 
 function matches (node) {
     return function (matcher) {
@@ -46,12 +43,7 @@ function compileMatchers (options) {
     var config = objectAssign(defaultOptions(), options);
     var assertionMatchers = config.assertionPatterns.map(escallmatch);
     var requireMatchers = config.requirePatterns.map(createRequireMatcher);
-    var importMatchers = [];
-    config.importPatterns.forEach(function (dcl) {
-        var ast = esprima.parse(dcl, { sourceType:'module' });
-        var body0 = ast.body[0];
-        importMatchers.push(new AstMatcher((body0)));
-    });
+    var importMatchers = config.importPatterns.map(createImportMatcher);
     return {
         imports: importMatchers,
         requires: requireMatchers,
