@@ -19,6 +19,7 @@ var esutils = require('esutils');
 var objectAssign = require('object-assign');
 var deepEqual = require('deep-equal');
 var defaultOptions = require('./lib/default-options');
+var AstMatcher = require('./lib/ast-matcher');
 
 function matches (node) {
     return function (matcher) {
@@ -65,7 +66,7 @@ function compileMatchers (options) {
         if (body0.type === syntax.VariableDeclaration) {
             declarationMatchers.push(espurify(body0.declarations[0]));
         } else if (body0.type === syntax.ImportDeclaration) {
-            importDeclarationMatchers.push(espurify(body0));
+            importDeclarationMatchers.push(new AstMatcher((body0)));
         }
     });
     return {
@@ -82,7 +83,7 @@ function createVisitorByMatchers (matchers) {
             var espathToRemove;
             switch (currentNode.type) {
             case syntax.ImportDeclaration:
-                if (matchers.imports.some(equivalentTree(currentNode))) {
+                if (matchers.imports.some(matches(currentNode))) {
                     espathToRemove = this.path().join('/');
                     pathToRemove[espathToRemove] = true;
                     this.skip();
