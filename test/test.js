@@ -63,9 +63,9 @@ describe('with options', function () {
             'ok(actual, [message])',
             'assert(value, status, [msg], [opts])'
         ],
-        declarationPatterns: [
-            'var assert = require("http-assert")',
-            'var ok = require("assert")'
+        requirePatterns: [
+            'assert = require("http-assert")',
+            'ok = require("assert")'
         ]
     });
 
@@ -89,15 +89,17 @@ describe('with options', function () {
             'assert.ifError(value)',
             'console.assert(value, [message])'
         ],
-        declarationPatterns: [
-            'var assert = require("http-assert")',
-            'var ok = require("assert")',
+        requirePatterns: [
+            'assert = require("http-assert")',
+            'ok = require("assert")',
+            'assert = require("assert")',
+            'assert = require("power-assert")'
+        ],
+        importPatterns: [
             'import assert from "assert"',
             'import * as assert from "assert"',
-            'var assert = require("assert")',
             'import assert from "power-assert"',
-            'import * as assert from "power-assert"',
-            'var assert = require("power-assert")'
+            'import * as assert from "power-assert"'
         ]
     });
 });
