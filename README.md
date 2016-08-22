@@ -28,6 +28,20 @@ $ npm install --save-dev unassert
 ```
 
 
+API
+---------------------------------------
+
+### var modifiedAst = unassert(ast)
+
+| return type                                                   |
+|:--------------------------------------------------------------|
+| `object` ([ECMAScript AST](https://github.com/estree/estree)) |
+
+Remove assertion calls matched to [patterns](https://github.com/twada/unassert#supported-patterns) from `ast` ([ECMAScript AST](https://github.com/estree/estree)). `ast` is manipulated directly so returned `modifiedAst` will be the same instance of `ast`.
+
+Assertion expressions are removed when they match [default patterns](https://github.com/twada/unassert#supported-patterns). In other words, unassert removes assertion calls that are compatible with Node.js standard assert API (and console.assert).
+
+
 EXAMPLE
 ---------------------------------------
 
