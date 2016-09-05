@@ -65,7 +65,18 @@ If callee name (for example, `assert.equal`) matches exactly and number of argum
 
 ##### options.requirePatterns
 
-Target patterns for `require` call removal.
+Target patterns for `require` call removal. Must be in form of assignments.
+
+For example,
+
+```js
+{
+    requirePatterns: [
+        'assert = require("assert")'
+    ],
+```
+
+will remove `var assert = require("assert")`, `let assert = require("assert")`, `const assert = require("assert")` and `var assert; assert = require("assert")` as well.
 
 
 ##### options.importPatterns
