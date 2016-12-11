@@ -83,6 +83,17 @@ will remove `var assert = require("assert")`, `let assert = require("assert")`, 
 
 Target patterns for import declaration removal.
 
+For example,
+
+```js
+{
+    importPatterns: [
+        'import assert from "assert"',
+        'import * as assert from "assert"',
+        'import assert from "power-assert"',
+        'import * as assert from "power-assert"'
+    ]
+```
 
 ### var options = unassert.defaultOptions()
 
