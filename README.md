@@ -28,6 +28,110 @@ $ npm install --save-dev unassert
 ```
 
 
+API
+---------------------------------------
+
+### var modifiedAst = unassert(ast)
+
+| return type                                                   |
+|:--------------------------------------------------------------|
+| `object` ([ECMAScript AST](https://github.com/estree/estree)) |
+
+Remove assertion calls matched to [patterns](https://github.com/twada/unassert#supported-patterns) from `ast` ([ECMAScript AST](https://github.com/estree/estree)). `ast` is manipulated directly so returned `modifiedAst` will be the same instance of `ast`.
+
+Assertion expressions are removed when they match [default patterns](https://github.com/twada/unassert#supported-patterns). In other words, unassert removes assertion calls that are compatible with Node.js standard assert API (and console.assert).
+
+
+### var visitor = unassert.createVisitor(options)
+
+| return type                                                                       |
+|:----------------------------------------------------------------------------------|
+| `object` (visitor object for [estraverse](https://github.com/estools/estraverse)) |
+
+Create visitor object to be used with `estraverse.replace`. Visitor can be customized by `options`.
+
+
+#### options
+
+Object for configuration options. passed `options` is `Object.assign`ed with default options. If not passed, default options will be used.
+
+
+##### options.assertionPatterns
+
+Target patterns for assertion removal.
+
+If callee name (for example, `assert.equal`) matches exactly and number of arguments is satisfied, then the assertion will be removed. Patterns are handled with [escallmatch](https://github.com/twada/escallmatch). Any arguments enclosed in bracket (for example, `[message]`) means optional parameters. Without bracket means mandatory parameters.
+
+
+##### options.requirePatterns
+
+Target patterns for `require` call removal. Must be in form of assignments.
+
+For example,
+
+```js
+{
+    requirePatterns: [
+        'assert = require("assert")'
+    ],
+```
+
+will remove `var assert = require("assert")`, `let assert = require("assert")`, `const assert = require("assert")` and `var assert; assert = require("assert")` as well.
+
+
+##### options.importPatterns
+
+Target patterns for import declaration removal.
+
+For example,
+
+```js
+{
+    importPatterns: [
+        'import assert from "assert"',
+        'import * as assert from "assert"',
+        'import assert from "power-assert"',
+        'import * as assert from "power-assert"'
+    ]
+```
+
+### var options = unassert.defaultOptions()
+
+Returns default options object for `createVisitor` function. In other words, returns
+
+```js
+{
+    assertionPatterns: [
+        'assert(value, [message])',
+        'assert.ok(value, [message])',
+        'assert.equal(actual, expected, [message])',
+        'assert.notEqual(actual, expected, [message])',
+        'assert.strictEqual(actual, expected, [message])',
+        'assert.notStrictEqual(actual, expected, [message])',
+        'assert.deepEqual(actual, expected, [message])',
+        'assert.notDeepEqual(actual, expected, [message])',
+        'assert.deepStrictEqual(actual, expected, [message])',
+        'assert.notDeepStrictEqual(actual, expected, [message])',
+        'assert.fail(actual, expected, message, operator)',
+        'assert.throws(block, [error], [message])',
+        'assert.doesNotThrow(block, [message])',
+        'assert.ifError(value)',
+        'console.assert(value, [message])'
+    ],
+    requirePatterns: [
+        'assert = require("assert")',
+        'assert = require("power-assert")'
+    ],
+    importPatterns: [
+        'import assert from "assert"',
+        'import * as assert from "assert"',
+        'import assert from "power-assert"',
+        'import * as assert from "power-assert"'
+    ]
+}
+```
+
+
 EXAMPLE
 ---------------------------------------
 
