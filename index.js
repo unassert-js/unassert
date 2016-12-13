@@ -2,7 +2,7 @@
  * unassert
  *   Encourage reliable programming by writing assertions in production code, and compiling them away from release
  *
- * https://github.com/twada/unassert
+ * https://github.com/unassert-js/unassert
  *
  * Copyright (c) 2015-2016 Takuto Wada
  * Licensed under the MIT license.

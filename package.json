@@ -7,7 +7,7 @@
     "email": "takuto.wada@gmail.com",
     "url": "https://github.com/twada"
   },
-  "bugs": "https://github.com/twada/unassert/issues",
+  "bugs": "https://github.com/unassert-js/unassert/issues",
   "dependencies": {
     "deep-equal": "^1.0.0",
     "escallmatch": "^1.5.0",
@@ -28,7 +28,7 @@
     "lib",
     "package.json"
   ],
-  "homepage": "https://github.com/twada/unassert",
+  "homepage": "https://github.com/unassert-js/unassert",
   "keywords": [
     "DbC",
     "unassert",
@@ -39,7 +39,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/twada/unassert.git"
+    "url": "https://github.com/unassert-js/unassert.git"
   },
   "scripts": {
     "test": "mocha"

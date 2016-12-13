@@ -13,11 +13,11 @@ See: "[unassert - encourage reliable programming by writing assertions in produc
 
 #### RELATED MODULES
 
-- [unassertify](https://github.com/twada/unassertify): Browserify transform for unassert
-- [babel-plugin-unassert](https://github.com/twada/babel-plugin-unassert): Babel plugin for unassert
+- [unassertify](https://github.com/unassert-js/unassertify): Browserify transform for unassert
+- [babel-plugin-unassert](https://github.com/unassert-js/babel-plugin-unassert): Babel plugin for unassert
 - [webpack-unassert-loader](https://github.com/zoncoen/webpack-unassert-loader): Webpack loader for unassert
-- [gulp-unassert](https://github.com/twada/gulp-unassert): Gulp plugin for unassert
-- [unassert-cli](https://github.com/twada/unassert-cli): CLI for unassert
+- [gulp-unassert](https://github.com/unassert-js/gulp-unassert): Gulp plugin for unassert
+- [unassert-cli](https://github.com/unassert-js/unassert-cli): CLI for unassert
 
 
 INSTALL
@@ -37,9 +37,9 @@ API
 |:--------------------------------------------------------------|
 | `object` ([ECMAScript AST](https://github.com/estree/estree)) |
 
-Remove assertion calls matched to [patterns](https://github.com/twada/unassert#supported-patterns) from `ast` ([ECMAScript AST](https://github.com/estree/estree)). `ast` is manipulated directly so returned `modifiedAst` will be the same instance of `ast`.
+Remove assertion calls matched to [patterns](https://github.com/unassert-js/unassert#supported-patterns) from `ast` ([ECMAScript AST](https://github.com/estree/estree)). `ast` is manipulated directly so returned `modifiedAst` will be the same instance of `ast`.
 
-Assertion expressions are removed when they match [default patterns](https://github.com/twada/unassert#supported-patterns). In other words, unassert removes assertion calls that are compatible with Node.js standard assert API (and console.assert).
+Assertion expressions are removed when they match [default patterns](https://github.com/unassert-js/unassert#supported-patterns). In other words, unassert removes assertion calls that are compatible with Node.js standard assert API (and console.assert).
 
 
 ### var visitor = unassert.createVisitor(options)
@@ -228,11 +228,11 @@ Licensed under the [MIT](http://twada.mit-license.org/2015-2016) license.
 [npm-url]: https://npmjs.org/package/unassert
 [npm-image]: https://badge.fury.io/js/unassert.svg
 
-[travis-url]: https://travis-ci.org/twada/unassert
-[travis-image]: https://secure.travis-ci.org/twada/unassert.svg?branch=master
+[travis-url]: https://travis-ci.org/unassert-js/unassert
+[travis-image]: https://secure.travis-ci.org/unassert-js/unassert.svg?branch=master
 
-[depstat-url]: https://gemnasium.com/twada/unassert
-[depstat-image]: https://gemnasium.com/twada/unassert.svg
+[depstat-url]: https://gemnasium.com/unassert-js/unassert
+[depstat-image]: https://gemnasium.com/unassert-js/unassert.svg
 
 [license-url]: http://twada.mit-license.org/2015-2016
 [license-image]: https://img.shields.io/badge/license-MIT-brightgreen.svg
