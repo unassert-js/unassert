@@ -1,5 +1,4 @@
-unassert
-================================
+[![unassert][unassert-banner]][unassert-url]
 
 Encourage reliable programming by writing assertions in production code, and compiling them away from release.
 
@@ -224,6 +223,9 @@ LICENSE
 ---------------------------------------
 Licensed under the [MIT](http://twada.mit-license.org/2015-2016) license.
 
+
+[unassert-url]: https://github.com/unassert-js/unassert
+[unassert-banner]: https://raw.githubusercontent.com/unassert-js/unassert-js-logo/master/banner/banner-official-fullcolor.png
 
 [npm-url]: https://npmjs.org/package/unassert
 [npm-image]: https://badge.fury.io/js/unassert.svg
