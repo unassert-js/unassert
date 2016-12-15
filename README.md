@@ -14,7 +14,7 @@ See: "[unassert - encourage reliable programming by writing assertions in produc
 
 - [unassertify](https://github.com/unassert-js/unassertify): Browserify transform for unassert
 - [babel-plugin-unassert](https://github.com/unassert-js/babel-plugin-unassert): Babel plugin for unassert
-- [webpack-unassert-loader](https://github.com/zoncoen/webpack-unassert-loader): Webpack loader for unassert
+- [webpack-unassert-loader](https://github.com/unassert-js/webpack-unassert-loader): Webpack loader for unassert
 - [gulp-unassert](https://github.com/unassert-js/gulp-unassert): Gulp plugin for unassert
 - [unassert-cli](https://github.com/unassert-js/unassert-cli): CLI for unassert
 
