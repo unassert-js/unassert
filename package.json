@@ -9,9 +9,9 @@
   },
   "bugs": "https://github.com/unassert-js/unassert/issues",
   "dependencies": {
+    "acorn": "^4.0.0",
     "deep-equal": "^1.0.0",
     "escallmatch": "^1.5.0",
-    "esprima": "^2.5.0",
     "espurify": "^1.3.0",
     "estraverse": "^4.1.0",
     "esutils": "^2.0.2",

@@ -153,14 +153,14 @@ function add (a, b) {
 Apply `unassert` then generate modified code to console.
 
 ```javascript
-var esprima = require('esprima');
+var acorn = require('acorn');
 var escodegen = require('escodegen');
 var unassert = require('unassert');
 var fs = require('fs');
 var path = require('path');
 var filepath = path.join(__dirname, 'math.js');
 
-var ast = esprima.parse(fs.readFileSync(filepath));
+var ast = acorn.parse(fs.readFileSync(filepath));
 var modifiedAst = unassert(ast);
 
 console.log(escodegen.generate(modifiedAst));

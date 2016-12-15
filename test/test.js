@@ -5,7 +5,7 @@ var unassert = require('..');
 var assert = require('assert');
 var path = require('path');
 var fs = require('fs');
-var esprima = require('esprima');
+var acorn = require('acorn');
 var escodegen = require('escodegen');
 var estraverse = require('estraverse');
 
@@ -17,13 +17,13 @@ describe('default behavior', function () {
         var expected = fs.readFileSync(expectedFilepath).toString();
 
         it('unassert ' + fixtureName, function () {
-            var ast = esprima.parse(fs.readFileSync(fixtureFilepath),  { sourceType: 'module' });
+            var ast = acorn.parse(fs.readFileSync(fixtureFilepath),  { sourceType: 'module' });
             var modifiedAst = unassert(ast);
             var actual = escodegen.generate(modifiedAst);
             assert.equal(actual + '\n', expected);
         });
         it('unassert.createVisitor ' + fixtureName, function () {
-            var ast = esprima.parse(fs.readFileSync(fixtureFilepath),  { sourceType: 'module' });
+            var ast = acorn.parse(fs.readFileSync(fixtureFilepath),  { sourceType: 'module' });
             var modifiedAst = estraverse.replace(ast, unassert.createVisitor());
             var actual = escodegen.generate(modifiedAst);
             assert.equal(actual + '\n', expected);
@@ -51,7 +51,7 @@ describe('with options', function () {
         var expected = fs.readFileSync(expectedFilepath).toString();
 
         it('unassert.createVisitor ' + fixtureName, function () {
-            var ast = esprima.parse(fs.readFileSync(fixtureFilepath),  { sourceType: 'module' });
+            var ast = acorn.parse(fs.readFileSync(fixtureFilepath),  { sourceType: 'module' });
             var modifiedAst = estraverse.replace(ast, unassert.createVisitor(extraOptions));
             var actual = escodegen.generate(modifiedAst);
             assert.equal(actual + '\n', expected);
