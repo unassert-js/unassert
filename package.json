@@ -24,6 +24,7 @@
   "files": [
     "README.md",
     "CHANGELOG.md",
+    "LICENSE",
     "index.js",
     "lib",
     "package.json"

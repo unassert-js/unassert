@@ -6,7 +6,7 @@
  *
  * Copyright (c) 2015-2016 Takuto Wada
  * Licensed under the MIT license.
- *   http://twada.mit-license.org/2015-2016
+ *   https://github.com/unassert-js/unassert/blob/master/LICENSE
  */
 'use strict';
 

@@ -236,5 +236,5 @@ Licensed under the [MIT](http://twada.mit-license.org/2015-2016) license.
 [depstat-url]: https://gemnasium.com/unassert-js/unassert
 [depstat-image]: https://gemnasium.com/unassert-js/unassert.svg
 
-[license-url]: http://twada.mit-license.org/2015-2016
+[license-url]: https://github.com/unassert-js/unassert/blob/master/LICENSE
 [license-image]: https://img.shields.io/badge/license-MIT-brightgreen.svg
