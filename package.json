@@ -1,7 +1,7 @@
 {
   "name": "unassert",
   "description": "Encourage reliable programming by writing assertions in production code, and compiling them away from release",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
