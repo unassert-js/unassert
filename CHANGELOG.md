@@ -1,3 +1,11 @@
+## [1.5.0](https://github.com/unassert-js/unassert/releases/tag/v1.5.0) (2016-12-19)
+
+#### Features
+
+* [Expose `createVisitor` to make assertion and declaration patterns configurable](https://github.com/unassert-js/unassert/pull/9)
+* transfer to unassert-js organization ([39164de5](https://github.com/unassert-js/unassert/commit/39164de555ee88c00b01085b9244029ff53f319b))
+
+
 ### [1.4.1](https://github.com/unassert-js/unassert/releases/tag/v1.4.1) (2016-07-22)
 
 
