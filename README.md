@@ -231,7 +231,7 @@ AUTHOR
 
 LICENSE
 ---------------------------------------
-Licensed under the [MIT](http://twada.mit-license.org/2015-2016) license.
+Licensed under the [MIT](https://github.com/unassert-js/unassert/blob/master/LICENSE) license.
 
 
 [unassert-url]: https://github.com/unassert-js/unassert
