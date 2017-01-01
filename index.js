@@ -12,10 +12,10 @@
 
 var estraverse = require('estraverse');
 var syntax = estraverse.Syntax;
-var escallmatch = require('escallmatch');
 var esutils = require('esutils');
 var objectAssign = require('object-assign');
 var defaultOptions = require('./lib/default-options');
+var createCallMatcher = require('./lib/create-call-matcher');
 var createRequireMatcher = require('./lib/create-require-matcher');
 var createImportMatcher = require('./lib/create-import-matcher');
 
@@ -44,7 +44,7 @@ function compileMatchers (options) {
     return {
         imports: config.importPatterns.map(createImportMatcher),
         requires: config.requirePatterns.map(createRequireMatcher),
-        assertions: config.assertionPatterns.map(escallmatch)
+        assertions: config.assertionPatterns.map(createCallMatcher)
     };
 }
 
