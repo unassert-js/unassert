@@ -1,4 +1,13 @@
+### [1.5.1](https://github.com/unassert-js/unassert/releases/tag/v1.5.1) (2017-01-01)
+
+
+#### Chores
+
+* switch to call-matcher ([de4172d](https://github.com/unassert-js/unassert/commit/de4172d532fc5edcabcdc5365ed310af118d88e1))
+
+
 ## [1.5.0](https://github.com/unassert-js/unassert/releases/tag/v1.5.0) (2016-12-19)
+
 
 #### Features
 
