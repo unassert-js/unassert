@@ -1,6 +1,6 @@
 /**
  * unassert
- *   Encourage reliable programming by writing assertions in production code, and compiling them away from release
+ *   Encourages programming with assertions by providing tools to compile them away.
  *
  * https://github.com/unassert-js/unassert
  *

@@ -1,6 +1,6 @@
 [![unassert][unassert-banner]][unassert-url]
 
-Encourage reliable programming by writing assertions in production code, and compiling them away from release.
+Encourages programming with assertions by providing tools to compile them away.
 
 [![Build Status][travis-image]][travis-url]
 [![NPM version][npm-image]][npm-url]

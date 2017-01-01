@@ -1,6 +1,6 @@
 {
   "name": "unassert",
-  "description": "Encourage reliable programming by writing assertions in production code, and compiling them away from release",
+  "description": "Encourages programming with assertions by providing tools to compile them away",
   "version": "1.5.0",
   "author": {
     "name": "Takuto Wada",
