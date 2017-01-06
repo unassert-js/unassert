@@ -1,13 +1,13 @@
 [![unassert][unassert-banner]][unassert-url]
 
-Encourages programming with assertions by providing tools to compile them away.
+Encourages [programming with assertions](https://en.wikipedia.org/wiki/Assertion_(software_development)) by providing tools to compile them away.
 
 [![Build Status][travis-image]][travis-url]
 [![NPM version][npm-image]][npm-url]
 [![Dependency Status][depstat-image]][depstat-url]
 [![License][license-image]][license-url]
 
-See: "[unassert - encourage reliable programming by writing assertions in production](http://www.slideshare.net/t_wada/unassert)" -- talk at NodeFest 2015, and "One more thing..." in talk at NodeFest 2016, titled "[From Library to Tool - power-assert as a General Purpose Assertion Enhancement Tool](https://speakerdeck.com/twada/from-library-to-tool-power-assert-as-a-general-purpose-assertion-enhancement-tool):
+See: "[unassert - encourage reliable programming by writing assertions in production](http://www.slideshare.net/t_wada/unassert)" -- talk at NodeFest 2015, and "One more thing..." in talk at NodeFest 2016, titled "[From Library to Tool - power-assert as a General Purpose Assertion Enhancement Tool](https://speakerdeck.com/twada/from-library-to-tool-power-assert-as-a-general-purpose-assertion-enhancement-tool)"
 
 
 #### RELATED MODULES
