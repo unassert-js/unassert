@@ -229,6 +229,11 @@ AUTHOR
 * [Takuto Wada](https://github.com/twada)
 
 
+CONTRIBUTORS
+---------------------------------------
+* [Renée Kooi](https://github.com/goto-bus-stop)
+
+
 LICENSE
 ---------------------------------------
 Licensed under the [MIT](https://github.com/unassert-js/unassert/blob/master/LICENSE) license.
