@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "escodegen": "^1.7.0",
-    "mocha": "^2.3.3"
+    "mocha": "^6.0.0"
   },
   "files": [
     "README.md",
