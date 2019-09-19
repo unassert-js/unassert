@@ -1,7 +1,6 @@
 language: node_js
 sudo: false
 node_js:
-  - "4" # to be removed on 2018-04-30
-  - "6" # to be removed on "April 2019"
   - "8" # to be removed on "December 2019"
-  - "9" # to be removed on "June 2018"
+  - "10" # to be removed on "April 2021"
+  - "12" # to be removed on "April 2022"
