@@ -1,3 +1,10 @@
+## [1.6.0](https://github.com/unassert-js/unassert/releases/tag/v1.6.0) (2019-09-20)
+
+#### Chores
+
+* [Dependency cleanup and updates](https://github.com/unassert-js/unassert/pull/15) by [@goto-bus-stop](https://github.com/goto-bus-stop)
+
+
 ### [1.5.1](https://github.com/unassert-js/unassert/releases/tag/v1.5.1) (2017-01-01)
 
 
