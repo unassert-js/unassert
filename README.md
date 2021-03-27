@@ -2,9 +2,8 @@
 
 Encourages [programming with assertions](https://en.wikipedia.org/wiki/Assertion_(software_development)) by providing tools to compile them away.
 
-[![Build Status][travis-image]][travis-url]
+[![Build Status][ci-image]][ci-url]
 [![NPM version][npm-image]][npm-url]
-[![Dependency Status][depstat-image]][depstat-url]
 [![License][license-image]][license-url]
 
 See: "[unassert - encourage reliable programming by writing assertions in production](http://www.slideshare.net/t_wada/unassert)" -- talk at NodeFest 2015, and "One more thing..." in talk at NodeFest 2016, titled "[From Library to Tool - power-assert as a General Purpose Assertion Enhancement Tool](https://speakerdeck.com/twada/from-library-to-tool-power-assert-as-a-general-purpose-assertion-enhancement-tool)"
@@ -245,11 +244,8 @@ Licensed under the [MIT](https://github.com/unassert-js/unassert/blob/master/LIC
 [npm-url]: https://npmjs.org/package/unassert
 [npm-image]: https://badge.fury.io/js/unassert.svg
 
-[travis-url]: https://travis-ci.org/unassert-js/unassert
-[travis-image]: https://secure.travis-ci.org/unassert-js/unassert.svg?branch=master
-
-[depstat-url]: https://gemnasium.com/unassert-js/unassert
-[depstat-image]: https://gemnasium.com/unassert-js/unassert.svg
+[ci-image]: https://github.com/unassert-js/unassert/workflows/Node.js%20CI/badge.svg
+[ci-url]: https://github.com/unassert-js/unassert/actions?query=workflow%3A%22Node.js+CI%22
 
 [license-url]: https://github.com/unassert-js/unassert/blob/master/LICENSE
 [license-image]: https://img.shields.io/badge/license-MIT-brightgreen.svg

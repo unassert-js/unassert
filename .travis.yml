@@ -1,6 +1,0 @@
-language: node_js
-sudo: false
-node_js:
-  - "8" # to be removed on "December 2019"
-  - "10" # to be removed on "April 2021"
-  - "12" # to be removed on "April 2022"
