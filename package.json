@@ -15,17 +15,17 @@
     }
   ],
   "dependencies": {
-    "acorn": "^7.0.0",
+    "acorn": "^8.0.0",
     "call-matcher": "^2.0.0",
-    "deep-equal": "^1.0.0",
-    "espurify": "^2.0.1",
-    "estraverse": "^4.1.0",
+    "deep-equal": "^2.0.0",
+    "espurify": "^2.1.0",
+    "estraverse": "^5.0.0",
     "esutils": "^2.0.2",
     "object-assign": "^4.1.0"
   },
   "devDependencies": {
-    "escodegen": "^1.7.0",
-    "mocha": "^6.0.0"
+    "escodegen": "^2.0.0",
+    "mocha": "^8.0.0"
   },
   "files": [
     "README.md",
