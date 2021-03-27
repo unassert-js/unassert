@@ -18,7 +18,7 @@
     "acorn": "^8.0.0",
     "call-matcher": "^2.0.0",
     "deep-equal": "^2.0.0",
-    "espurify": "^2.0.0",
+    "espurify": "^2.1.0",
     "estraverse": "^5.0.0",
     "esutils": "^2.0.2",
     "object-assign": "^4.1.0"
