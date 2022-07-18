@@ -4,6 +4,7 @@ Encourages [programming with assertions](https://en.wikipedia.org/wiki/Assertion
 
 [![Build Status][ci-image]][ci-url]
 [![NPM version][npm-image]][npm-url]
+[![Code Style][style-image]][style-url]
 [![License][license-image]][license-url]
 
 See: "[unassert - encourage reliable programming by writing assertions in production](http://www.slideshare.net/t_wada/unassert)" -- talk at NodeFest 2015, and "One more thing..." in talk at NodeFest 2016, titled "[From Library to Tool - power-assert as a General Purpose Assertion Enhancement Tool](https://speakerdeck.com/twada/from-library-to-tool-power-assert-as-a-general-purpose-assertion-enhancement-tool)"
@@ -219,6 +220,9 @@ Licensed under the [MIT](https://github.com/unassert-js/unassert/blob/master/LIC
 
 [ci-image]: https://github.com/unassert-js/unassert/workflows/Node.js%20CI/badge.svg
 [ci-url]: https://github.com/unassert-js/unassert/actions?query=workflow%3A%22Node.js+CI%22
+
+[style-url]: https://github.com/standard/semistandard
+[style-image]: https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg
 
 [license-url]: https://github.com/unassert-js/unassert/blob/master/LICENSE
 [license-image]: https://img.shields.io/badge/license-MIT-brightgreen.svg
