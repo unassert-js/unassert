@@ -21,7 +21,9 @@
   "devDependencies": {
     "acorn": "^8.0.0",
     "escodegen": "^2.0.0",
-    "mocha": "^10.0.0"
+    "mocha": "^10.0.0",
+    "semistandard": "^16.0.0",
+    "snazzy": "^9.0.0"
   },
   "files": [
     "README.md",
@@ -44,6 +46,16 @@
     "url": "https://github.com/unassert-js/unassert.git"
   },
   "scripts": {
-    "test": "mocha"
+    "preversion": "npm test",
+    "lint": "semistandard --verbose index.js test/test.js | snazzy",
+    "fmt": "semistandard --fix index.js test/test.js",
+    "test": "npm run lint && mocha test"
+  },
+  "semistandard": {
+    "globals": [
+      "describe",
+      "beforeEach",
+      "it"
+    ]
   }
 }
