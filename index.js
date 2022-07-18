@@ -14,6 +14,19 @@ var estraverse = require('estraverse');
 var syntax = estraverse.Syntax;
 var esutils = require('esutils');
 
+function defaultOptions () {
+    return {
+        variables: [
+            'assert'
+        ],
+        modules: [
+            'assert',
+            'power-assert',
+            'node:assert'
+        ]
+    };
+};
+
 function isBodyOfIfStatement (parentNode, key) {
     return parentNode.type === syntax.IfStatement && (key === 'consequent' || key === 'alternate');
 }
@@ -56,16 +69,7 @@ function isImportSpecifier(node) {
 
 function createVisitor (options) {
 
-const config = Object.assign({
-  variables: [
-    'assert'
-  ],
-  modules: [
-    'assert',
-    'power-assert',
-    'node:assert'
-  ]
-}, options);
+const config = Object.assign(defaultOptions(), options);
 
 function isAssertionModuleName (lit) {
   return config.modules.some((name) => lit.value === name);
@@ -224,5 +228,6 @@ function unassert (ast) {
     return estraverse.replace(ast, createVisitor());
 }
 
+unassert.defaultOptions = defaultOptions;
 unassert.createVisitor = createVisitor;
 module.exports = unassert;
