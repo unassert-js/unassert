@@ -59,47 +59,24 @@ describe('with options', function () {
     }
 
     testWithCustomization('customization_httpassert', {
-        assertionPatterns: [
-            'ok(actual, [message])',
-            'assert(value, status, [msg], [opts])'
+        variables: [
+            'assert',
+            'ok'
         ],
-        requirePatterns: [
-            'assert = require("http-assert")',
-            'ok = require("assert")'
+        modules: [
+            'assert',
+            'http-assert'
         ]
     });
 
     testWithCustomization('func', {
-        assertionPatterns: [
-            'ok(actual, [message])',
-            'assert(value, status, [msg], [opts])',
-            'assert(value, [message])',
-            'assert.ok(value, [message])',
-            'assert.equal(actual, expected, [message])',
-            'assert.notEqual(actual, expected, [message])',
-            'assert.strictEqual(actual, expected, [message])',
-            'assert.notStrictEqual(actual, expected, [message])',
-            'assert.deepEqual(actual, expected, [message])',
-            'assert.notDeepEqual(actual, expected, [message])',
-            'assert.deepStrictEqual(actual, expected, [message])',
-            'assert.notDeepStrictEqual(actual, expected, [message])',
-            'assert.fail(actual, expected, message, operator)',
-            'assert.throws(block, [error], [message])',
-            'assert.doesNotThrow(block, [message])',
-            'assert.ifError(value)',
-            'console.assert(value, [message])'
+        variables: [
+            'assert'
         ],
-        requirePatterns: [
-            'assert = require("http-assert")',
-            'ok = require("assert")',
-            'assert = require("assert")',
-            'assert = require("power-assert")'
-        ],
-        importPatterns: [
-            'import assert from "assert"',
-            'import * as assert from "assert"',
-            'import assert from "power-assert"',
-            'import * as assert from "power-assert"'
+        modules: [
+            'assert',
+            'power-assert',
+            'node:assert'
         ]
     });
 });
