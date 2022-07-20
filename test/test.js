@@ -47,20 +47,20 @@ describe('default behavior (with default options)', function () {
 });
 
 describe('with customized options', function () {
-  function testWithCustomization (fixtureName, extraOptions) {
+  function testWithCustomization (fixtureName, options) {
     const fixtureFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'fixture.js');
     const expectedFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
     const expected = fs.readFileSync(expectedFilepath).toString();
 
     it('unassertAst ' + fixtureName, function () {
       const ast = parse(fixtureFilepath);
-      const modifiedAst = unassertAst(ast, extraOptions);
+      const modifiedAst = unassertAst(ast, options);
       const actual = escodegen.generate(modifiedAst);
       assert.equal(actual + '\n', expected);
     });
     it('createVisitor ' + fixtureName, function () {
       const ast = parse(fixtureFilepath);
-      const modifiedAst = estraverse.replace(ast, createVisitor(extraOptions));
+      const modifiedAst = estraverse.replace(ast, createVisitor(options));
       const actual = escodegen.generate(modifiedAst);
       assert.equal(actual + '\n', expected);
     });
@@ -74,6 +74,22 @@ describe('with customized options', function () {
     modules: [
       'assert',
       'http-assert'
+    ]
+  });
+
+  testWithCustomization('customization_various_modules', {
+    variables: [
+      'assert',
+      'invariant',
+      'nassert',
+      'uassert'
+    ],
+    modules: [
+      'assert',
+      'node:assert',
+      'invariant',
+      'nanoassert',
+      'uvu/assert'
     ]
   });
 
