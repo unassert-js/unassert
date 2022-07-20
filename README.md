@@ -98,7 +98,7 @@ Target variable names for assertion call removal.
 
 For example,
 
-```js
+```javascript
 {
   variables: [
     'assert'
@@ -136,10 +136,11 @@ Target module names for `require` and `import` call removal.
 
 For example,
 
-```js
+```javascript
 {
   modules: [
-    'assert'
+    'assert',
+    'node:assert'
   ]
 ```
 
@@ -164,6 +165,32 @@ and assignments.
 * `assert = require("node:assert").strict`
 
 
+### const visitor = createVisitor(options)
+
+| return type                                                                       |
+|:----------------------------------------------------------------------------------|
+| `object` (visitor object for [estraverse](https://github.com/estools/estraverse)) |
+
+Create visitor object to be used with `estraverse.replace`. Visitor can be customized by `options`.
+
+
+### const options = defaultOptions()
+
+Returns default options object for `unassertAst` and `createVisitor` function. In other words, returns
+
+```javascript
+{
+  variables: [
+    'assert'
+  ],
+  modules: [
+    'assert',
+    'power-assert',
+    'node:assert'
+  ]
+}
+```
+
 CUSTOMIZATION
 ---------------------------------------
 
@@ -171,7 +198,7 @@ You can customize options such as assertion variable names and module names.
 
 options:
 
-```
+```javascript
 {
   variables: [
     'assert',
@@ -220,32 +247,6 @@ output:
 ```javascript
 function add(a, b) {
   return a + b;
-}
-```
-
-### const visitor = createVisitor(options)
-
-| return type                                                                       |
-|:----------------------------------------------------------------------------------|
-| `object` (visitor object for [estraverse](https://github.com/estools/estraverse)) |
-
-Create visitor object to be used with `estraverse.replace`. Visitor can be customized by `options`.
-
-
-### const options = defaultOptions()
-
-Returns default options object for `unassertAst` and `createVisitor` function. In other words, returns
-
-```js
-{
-  variables: [
-    'assert'
-  ],
-  modules: [
-    'assert',
-    'power-assert',
-    'node:assert'
-  ]
 }
 ```
 
