@@ -20,7 +20,6 @@ function defaultOptions () {
     ],
     modules: [
       'assert',
-      'power-assert',
       'node:assert'
     ]
   };
