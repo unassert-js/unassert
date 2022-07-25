@@ -140,7 +140,6 @@ For example,
 {
   modules: [
     'assert',
-    'power-assert',
     'node:assert'
   ]
 ```
@@ -148,28 +147,21 @@ For example,
 will remove assert variable declarations such as,
 
 * `const assert = require("assert")`
-* `const assert = require("power-assert")`
 * `const assert = require("node:assert")`
 * `const assert = require("assert").strict`
-* `const assert = require("power-assert").strict`
 * `const assert = require("node:assert").strict`
 * `import assert from "assert"`
-* `import assert from "power-assert"`
 * `import assert from "node:assert"`
 * `import * as assert from "assert"`
-* `import * as assert from "power-assert"`
 * `import * as assert from "node:assert"`
 * `import {strict as assert} from "assert"`
-* `import {strict as assert} from "power-assert"`
 * `import {strict as assert} from "node:assert"`
 
 and assignments.
 
 * `assert = require("assert")`
-* `assert = require("power-assert")`
 * `assert = require("node:assert")`
 * `assert = require("assert").strict`
-* `assert = require("power-assert").strict`
 * `assert = require("node:assert").strict`
 
 
@@ -193,7 +185,6 @@ Returns default options object for `unassertAst` and `createVisitor` function. I
   ],
   modules: [
     'assert',
-    'power-assert',
     'node:assert'
   ]
 }
@@ -216,6 +207,7 @@ options:
   ],
   modules: [
     'assert',
+    'power-assert',
     'node:assert',
     'invariant',
     'nanoassert',
@@ -227,7 +219,7 @@ options:
 input:
 
 ```javascript
-import {strict as assert} from 'node:assert';
+import assert from 'power-assert';
 import invariant from 'invariant';
 import nassert from 'nanoassert';
 import * as uassert from 'uvu/assert';
@@ -257,8 +249,6 @@ function add(a, b) {
   return a + b;
 }
 ```
-
-Note: unassert supports removal of [power-assert](https://github.com/power-assert-js/power-assert) declarations (`require('power-assert');`) too.
 
 
 OUR SUPPORT POLICY
