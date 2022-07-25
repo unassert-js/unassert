@@ -36,11 +36,9 @@ describe('default behavior (with default options)', function () {
   testTransform('func');
   testTransform('commonjs');
   testTransform('commonjs_singlevar');
-  testTransform('commonjs_powerassert');
   testTransform('assignment');
   testTransform('assignment_singlevar');
   testTransform('es6module');
-  testTransform('es6module_powerassert');
   testTransform('es6module_namespece');
   testTransform('not_an_expression_statement');
   testTransform('non_block_statement');
@@ -74,6 +72,24 @@ describe('with customized options', function () {
     modules: [
       'assert',
       'http-assert'
+    ]
+  });
+
+  testWithCustomization('customization_powerassert_cjs', {
+    variables: [
+      'assert'
+    ],
+    modules: [
+      'power-assert'
+    ]
+  });
+
+  testWithCustomization('customization_powerassert_esm', {
+    variables: [
+      'assert'
+    ],
+    modules: [
+      'power-assert'
     ]
   });
 
