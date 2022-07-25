@@ -31,9 +31,14 @@
     "README.md",
     "CHANGELOG.md",
     "LICENSE",
-    "index.js",
-    "package.json"
+    "src",
+    "dist"
   ],
+  "main": "./dist/index.cjs",
+  "exports": {
+    "import": "./src/index.mjs",
+    "require": "./dist/index.cjs"
+  },
   "homepage": "https://github.com/unassert-js/unassert",
   "keywords": [
     "DbC",
@@ -42,7 +47,6 @@
     "assertion"
   ],
   "license": "MIT",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/unassert-js/unassert.git"
