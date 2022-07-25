@@ -19,6 +19,7 @@ See: "[unassert - encourage reliable programming by writing assertions in produc
 - [unassert-cli](https://github.com/unassert-js/unassert-cli): CLI for unassert
 - [rollup-plugin-unassert](https://gitlab.com/IvanSanchez/rollup-plugin-unassert): RollupJS plugin for unassert
 
+
 INSTALL
 ---------------------------------------
 
@@ -27,26 +28,64 @@ $ npm install --save-dev unassert
 ```
 
 
+EXAMPLE
+---------------------------------------
+
+For given `math.js` below,
+
+```javascript
+const assert = require('node:assert');
+
+function add (a, b) {
+  assert(typeof a === 'number');
+  console.assert(!isNaN(a));
+  assert.equal(typeof b, 'number');
+  assert.ok(!isNaN(b));
+  return a + b;
+}
+```
+
+Apply `unassertAst` then generate modified code to console.
+
+```javascript
+const { unassertAst } = require('unassert');
+const acorn = require('acorn');
+const escodegen = require('escodegen');
+const fs = require('node:fs');
+const path = require('node:path');
+const filepath = path.join(__dirname, 'math.js');
+
+const ast = acorn.parse(fs.readFileSync(filepath), { ecmaVersion: '2022' });
+const modifiedAst = unassertAst(ast);
+
+console.log(escodegen.generate(modifiedAst));
+```
+
+Then you will see assert calls disappear.
+
+```javascript
+function add(a, b) {
+  return a + b;
+}
+```
+
+
 API
 ---------------------------------------
 
-### const modifiedAst = unassert(ast)
+unassert package exports three functions. `unassertAst` is the main function. `createVisitor` and `defaultOptions` are for customization.
+
+```javascript
+const { unassertAst, createVisitor, defaultOptions } = require('unassert')
+```
+
+### const modifiedAst = unassertAst(ast, options)
 
 | return type                                                   |
 |:--------------------------------------------------------------|
 | `object` ([ECMAScript AST](https://github.com/estree/estree)) |
 
-Remove assertion calls from `ast` ([ECMAScript AST](https://github.com/estree/estree)). `ast` is manipulated directly so returned `modifiedAst` will be the same instance of `ast`.
-
-
-### const visitor = unassert.createVisitor(options)
-
-| return type                                                                       |
-|:----------------------------------------------------------------------------------|
-| `object` (visitor object for [estraverse](https://github.com/estools/estraverse)) |
-
-Create visitor object to be used with `estraverse.replace`. Visitor can be customized by `options`.
-
+Remove assertion calls from `ast` ([ECMAScript AST](https://github.com/estree/estree)). Default behaviour can be customized by `options`. `ast` is manipulated directly so returned `modifiedAst` will be the same instance of `ast`.
 
 #### options
 
@@ -59,7 +98,7 @@ Target variable names for assertion call removal.
 
 For example,
 
-```js
+```javascript
 {
   variables: [
     'assert'
@@ -97,39 +136,57 @@ Target module names for `require` and `import` call removal.
 
 For example,
 
-```js
+```javascript
 {
   modules: [
-    'assert'
+    'assert',
+    'power-assert',
+    'node:assert'
   ]
 ```
 
 will remove assert variable declarations such as,
 
 * `const assert = require("assert")`
+* `const assert = require("power-assert")`
 * `const assert = require("node:assert")`
 * `const assert = require("assert").strict`
+* `const assert = require("power-assert").strict`
 * `const assert = require("node:assert").strict`
 * `import assert from "assert"`
+* `import assert from "power-assert"`
 * `import assert from "node:assert"`
 * `import * as assert from "assert"`
+* `import * as assert from "power-assert"`
 * `import * as assert from "node:assert"`
 * `import {strict as assert} from "assert"`
+* `import {strict as assert} from "power-assert"`
 * `import {strict as assert} from "node:assert"`
 
 and assignments.
 
 * `assert = require("assert")`
+* `assert = require("power-assert")`
 * `assert = require("node:assert")`
 * `assert = require("assert").strict`
+* `assert = require("power-assert").strict`
 * `assert = require("node:assert").strict`
 
 
-### const options = unassert.defaultOptions()
+### const visitor = createVisitor(options)
 
-Returns default options object for `createVisitor` function. In other words, returns
+| return type                                                                       |
+|:----------------------------------------------------------------------------------|
+| `object` (visitor object for [estraverse](https://github.com/estools/estraverse)) |
 
-```js
+Create visitor object to be used with `estraverse.replace`. Visitor can be customized by `options`.
+
+
+### const options = defaultOptions()
+
+Returns default options object for `unassertAst` and `createVisitor` function. In other words, returns
+
+```javascript
 {
   variables: [
     'assert'
@@ -142,41 +199,58 @@ Returns default options object for `createVisitor` function. In other words, ret
 }
 ```
 
-
-EXAMPLE
+CUSTOMIZATION
 ---------------------------------------
 
-For given `math.js` below,
+You can customize options such as assertion variable names and module names.
+
+options:
 
 ```javascript
-const assert = require('assert');
-
-function add (a, b) {
-  assert(typeof a === 'number');
-  console.assert(!isNaN(a));
-  assert.equal(typeof b, 'number');
-  assert.ok(!isNaN(b));
-  return a + b;
+{
+  variables: [
+    'assert',
+    'invariant',
+    'nassert',
+    'uassert'
+  ],
+  modules: [
+    'assert',
+    'node:assert',
+    'invariant',
+    'nanoassert',
+    'uvu/assert'
+  ]
 }
 ```
 
-Apply `unassert` then generate modified code to console.
+input:
 
 ```javascript
-const acorn = require('acorn');
-const escodegen = require('escodegen');
-const unassert = require('unassert');
-const fs = require('fs');
-const path = require('path');
-const filepath = path.join(__dirname, 'math.js');
+import {strict as assert} from 'node:assert';
+import invariant from 'invariant';
+import nassert from 'nanoassert';
+import * as uassert from 'uvu/assert';
 
-const ast = acorn.parse(fs.readFileSync(filepath));
-const modifiedAst = unassert(ast);
+function add (a, b) {
+    assert(!isNaN(a));
+    assert.equal(typeof b, 'number');
+    assert.ok(!isNaN(b));
 
-console.log(escodegen.generate(modifiedAst));
+    nassert(!isNaN(a));
+
+    uassert.is(Math.sqrt(4), 2);
+    uassert.is(Math.sqrt(144), 12);
+    uassert.is(Math.sqrt(2), Math.SQRT2);
+
+    invariant(someTruthyVal, 'This will not throw');
+    invariant(someFalseyVal, 'This will throw an error with this message');
+
+    return a + b;
+}
 ```
 
-Then you will see assert calls disappear.
+output:
 
 ```javascript
 function add(a, b) {
@@ -184,7 +258,7 @@ function add(a, b) {
 }
 ```
 
-Note: unassert supports removal of [power-assert](https://github.com/power-assert-js/power-assert) declarations (`var assert = require('power-assert');`) too.
+Note: unassert supports removal of [power-assert](https://github.com/power-assert-js/power-assert) declarations (`require('power-assert');`) too.
 
 
 OUR SUPPORT POLICY

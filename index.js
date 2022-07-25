@@ -10,9 +10,8 @@
  */
 'use strict';
 
-const estraverse = require('estraverse');
-const syntax = estraverse.Syntax;
-const esutils = require('esutils');
+const { replace, Syntax: syntax } = require('estraverse');
+const { ast: esutilsAst } = require('esutils');
 
 function defaultOptions () {
   return {
@@ -32,7 +31,7 @@ function isBodyOfIfStatement (parentNode, key) {
 }
 
 function isBodyOfIterationStatement (parentNode, key) {
-  return esutils.ast.isIterationStatement(parentNode) && key === 'body';
+  return esutilsAst.isIterationStatement(parentNode) && key === 'body';
 }
 
 function isNonBlockChildOfIfStatementOrLoop (currentNode, parentNode, key) {
@@ -227,10 +226,12 @@ function createVisitor (options) {
   };
 }
 
-function unassert (ast) {
-  return estraverse.replace(ast, createVisitor());
+function unassertAst (ast, options) {
+  return replace(ast, createVisitor(options));
 }
 
-unassert.defaultOptions = defaultOptions;
-unassert.createVisitor = createVisitor;
-module.exports = unassert;
+module.exports = {
+  unassertAst,
+  defaultOptions,
+  createVisitor
+};

@@ -1,7 +1,7 @@
 'use strict';
 
-delete require.cache[require.resolve('..')];
-const unassert = require('..');
+delete require.cache[require.resolve('../index.js')];
+const { unassertAst, createVisitor } = require('../index.js');
 const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
@@ -9,21 +9,25 @@ const acorn = require('acorn');
 const escodegen = require('escodegen');
 const estraverse = require('estraverse');
 
-describe('default behavior', function () {
+function parse (filepath) {
+  return acorn.parse(fs.readFileSync(filepath), { sourceType: 'module', ecmaVersion: '2022' });
+}
+
+describe('default behavior (with default options)', function () {
   function testTransform (fixtureName) {
     const fixtureFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'fixture.js');
     const expectedFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
     const expected = fs.readFileSync(expectedFilepath).toString();
 
-    it('unassert ' + fixtureName, function () {
-      const ast = acorn.parse(fs.readFileSync(fixtureFilepath), { sourceType: 'module' });
-      const modifiedAst = unassert(ast);
+    it('unassertAst ' + fixtureName, function () {
+      const ast = parse(fixtureFilepath);
+      const modifiedAst = unassertAst(ast);
       const actual = escodegen.generate(modifiedAst);
       assert.equal(actual + '\n', expected);
     });
-    it('unassert.createVisitor ' + fixtureName, function () {
-      const ast = acorn.parse(fs.readFileSync(fixtureFilepath), { sourceType: 'module' });
-      const modifiedAst = estraverse.replace(ast, unassert.createVisitor());
+    it('createVisitor ' + fixtureName, function () {
+      const ast = parse(fixtureFilepath);
+      const modifiedAst = estraverse.replace(ast, createVisitor());
       const actual = escodegen.generate(modifiedAst);
       assert.equal(actual + '\n', expected);
     });
@@ -42,15 +46,21 @@ describe('default behavior', function () {
   testTransform('non_block_statement');
 });
 
-describe('with options', function () {
-  function testWithCustomization (fixtureName, extraOptions) {
+describe('with customized options', function () {
+  function testWithCustomization (fixtureName, options) {
     const fixtureFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'fixture.js');
     const expectedFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
     const expected = fs.readFileSync(expectedFilepath).toString();
 
-    it('unassert.createVisitor ' + fixtureName, function () {
-      const ast = acorn.parse(fs.readFileSync(fixtureFilepath), { sourceType: 'module' });
-      const modifiedAst = estraverse.replace(ast, unassert.createVisitor(extraOptions));
+    it('unassertAst ' + fixtureName, function () {
+      const ast = parse(fixtureFilepath);
+      const modifiedAst = unassertAst(ast, options);
+      const actual = escodegen.generate(modifiedAst);
+      assert.equal(actual + '\n', expected);
+    });
+    it('createVisitor ' + fixtureName, function () {
+      const ast = parse(fixtureFilepath);
+      const modifiedAst = estraverse.replace(ast, createVisitor(options));
       const actual = escodegen.generate(modifiedAst);
       assert.equal(actual + '\n', expected);
     });
@@ -64,6 +74,22 @@ describe('with options', function () {
     modules: [
       'assert',
       'http-assert'
+    ]
+  });
+
+  testWithCustomization('customization_various_modules', {
+    variables: [
+      'assert',
+      'invariant',
+      'nassert',
+      'uassert'
+    ],
+    modules: [
+      'assert',
+      'node:assert',
+      'invariant',
+      'nanoassert',
+      'uvu/assert'
     ]
   });
 
