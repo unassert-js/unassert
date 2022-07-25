@@ -47,18 +47,36 @@ function add (a, b) {
 
 Apply `unassertAst` then generate modified code to console.
 
+via CJS code
 ```javascript
 const { unassertAst } = require('unassert');
-const acorn = require('acorn');
-const escodegen = require('escodegen');
-const fs = require('node:fs');
-const path = require('node:path');
-const filepath = path.join(__dirname, 'math.js');
+const { parse } = require('acorn');
+const { generate } = require('escodegen');
+const { readFileSync } = require('node:fs');
+const { join, dirname } = require('node:path');
 
-const ast = acorn.parse(fs.readFileSync(filepath), { ecmaVersion: '2022' });
+const filepath = join(__dirname, 'math.js');
+const ast = parse(readFileSync(filepath), { ecmaVersion: '2022' });
 const modifiedAst = unassertAst(ast);
 
-console.log(escodegen.generate(modifiedAst));
+console.log(generate(modifiedAst));
+```
+
+or via ESM code
+```javascript
+import { unassertAst } from 'unassert';
+import { parse } from 'acorn';
+import { generate } from 'escodegen';
+import { readFileSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const filepath = join(__dirname, 'math.js');
+const ast = parse(readFileSync(filepath), { ecmaVersion: '2022' });
+const modifiedAst = unassertAst(ast);
+
+console.log(generate(modifiedAst));
 ```
 
 Then you will see assert calls disappear.
@@ -77,6 +95,10 @@ unassert package exports three functions. `unassertAst` is the main function. `c
 
 ```javascript
 const { unassertAst, createVisitor, defaultOptions } = require('unassert')
+```
+
+```javascript
+import { unassertAst, createVisitor, defaultOptions } from 'unassert'
 ```
 
 ### const modifiedAst = unassertAst(ast, options)

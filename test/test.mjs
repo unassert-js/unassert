@@ -1,34 +1,33 @@
-'use strict';
+import { unassertAst, createVisitor } from '../src/index.mjs';
+import { strict as assert } from 'assert';
+import { resolve, dirname } from 'path';
+import { readFileSync } from 'fs';
+import { parse } from 'acorn';
+import { generate } from 'escodegen';
+import { replace } from 'estraverse';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-delete require.cache[require.resolve('../index.js')];
-const { unassertAst, createVisitor } = require('../index.js');
-const assert = require('assert');
-const path = require('path');
-const fs = require('fs');
-const acorn = require('acorn');
-const escodegen = require('escodegen');
-const estraverse = require('estraverse');
-
-function parse (filepath) {
-  return acorn.parse(fs.readFileSync(filepath), { sourceType: 'module', ecmaVersion: '2022' });
+function parseFixture (filepath) {
+  return parse(readFileSync(filepath), { sourceType: 'module', ecmaVersion: '2022' });
 }
 
 describe('default behavior (with default options)', function () {
   function testTransform (fixtureName) {
-    const fixtureFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'fixture.js');
-    const expectedFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
-    const expected = fs.readFileSync(expectedFilepath).toString();
+    const fixtureFilepath = resolve(__dirname, 'fixtures', fixtureName, 'fixture.js');
+    const expectedFilepath = resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
+    const expected = readFileSync(expectedFilepath).toString();
 
     it('unassertAst ' + fixtureName, function () {
-      const ast = parse(fixtureFilepath);
+      const ast = parseFixture(fixtureFilepath);
       const modifiedAst = unassertAst(ast);
-      const actual = escodegen.generate(modifiedAst);
+      const actual = generate(modifiedAst);
       assert.equal(actual + '\n', expected);
     });
     it('createVisitor ' + fixtureName, function () {
-      const ast = parse(fixtureFilepath);
-      const modifiedAst = estraverse.replace(ast, createVisitor());
-      const actual = escodegen.generate(modifiedAst);
+      const ast = parseFixture(fixtureFilepath);
+      const modifiedAst = replace(ast, createVisitor());
+      const actual = generate(modifiedAst);
       assert.equal(actual + '\n', expected);
     });
   }
@@ -46,20 +45,20 @@ describe('default behavior (with default options)', function () {
 
 describe('with customized options', function () {
   function testWithCustomization (fixtureName, options) {
-    const fixtureFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'fixture.js');
-    const expectedFilepath = path.resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
-    const expected = fs.readFileSync(expectedFilepath).toString();
+    const fixtureFilepath = resolve(__dirname, 'fixtures', fixtureName, 'fixture.js');
+    const expectedFilepath = resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
+    const expected = readFileSync(expectedFilepath).toString();
 
     it('unassertAst ' + fixtureName, function () {
-      const ast = parse(fixtureFilepath);
+      const ast = parseFixture(fixtureFilepath);
       const modifiedAst = unassertAst(ast, options);
-      const actual = escodegen.generate(modifiedAst);
+      const actual = generate(modifiedAst);
       assert.equal(actual + '\n', expected);
     });
     it('createVisitor ' + fixtureName, function () {
-      const ast = parse(fixtureFilepath);
-      const modifiedAst = estraverse.replace(ast, createVisitor(options));
-      const actual = escodegen.generate(modifiedAst);
+      const ast = parseFixture(fixtureFilepath);
+      const modifiedAst = replace(ast, createVisitor(options));
+      const actual = generate(modifiedAst);
       assert.equal(actual + '\n', expected);
     });
   }
