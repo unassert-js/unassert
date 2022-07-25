@@ -50,8 +50,8 @@
   "scripts": {
     "preversion": "npm run build && npm test",
     "build": "rimraf dist && rollup -c",
-    "lint": "semistandard --verbose index.js test/test.js | snazzy",
-    "fmt": "semistandard --fix index.js test/test.js",
+    "lint": "semistandard --verbose src/*.mjs test/*.mjs | snazzy",
+    "fmt": "semistandard --fix src/*.mjs test/*.mjs",
     "test": "npm run lint && mocha test"
   },
   "semistandard": {

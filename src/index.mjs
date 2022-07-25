@@ -8,10 +8,8 @@
  * Licensed under the MIT license.
  *   https://github.com/unassert-js/unassert/blob/master/LICENSE
  */
-'use strict';
-
-const { replace, Syntax: syntax } = require('estraverse');
-const { ast: esutilsAst } = require('esutils');
+import { replace, Syntax as syntax } from 'estraverse';
+import { ast as esutilsAst } from 'esutils';
 
 function defaultOptions () {
   return {
@@ -229,7 +227,7 @@ function unassertAst (ast, options) {
   return replace(ast, createVisitor(options));
 }
 
-module.exports = {
+export {
   unassertAst,
   defaultOptions,
   createVisitor
