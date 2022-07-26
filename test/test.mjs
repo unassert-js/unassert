@@ -13,8 +13,8 @@ function parseFixture (filepath) {
 }
 
 function testWithFixture (ext, fixtureName) {
-  const fixtureFilepath = resolve(__dirname, ext, `${fixtureName}.${ext}`);
-  const expectedFilepath = resolve(__dirname, ext, `expected.${ext}`);
+  const fixtureFilepath = resolve(__dirname, 'fixtures', ext, `${fixtureName}.${ext}`);
+  const expectedFilepath = resolve(__dirname, 'fixtures', ext, `expected.${ext}`);
   const expected = readFileSync(expectedFilepath).toString();
 
   it('unassertAst ' + fixtureName, function () {
