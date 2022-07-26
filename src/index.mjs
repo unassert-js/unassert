@@ -71,6 +71,9 @@ function createVisitor (options) {
   const config = Object.assign(defaultOptions(), options);
 
   function isAssertionModuleName (lit) {
+    if (!isLiteral(lit)) {
+      return false;
+    }
     return config.modules.some((name) => lit.value === name);
   }
 
