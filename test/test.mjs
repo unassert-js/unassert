@@ -37,8 +37,12 @@ describe('ESM', function () {
   }
   testESM('import_default_specifier');
   testESM('import_default_specifier_node_protocol');
+  testESM('import_default_specifier_slash_strict');
+  testESM('import_default_specifier_node_protocol_slash_strict');
   testESM('import_namespace_specifier');
   testESM('import_namespace_specifier_node_protocol');
+  testESM('import_namespace_specifier_slash_strict');
+  testESM('import_namespace_specifier_node_protocol_slash_strict');
   testESM('import_specifier_strict');
   testESM('import_specifier_strict_node_protocol');
 });
@@ -49,8 +53,10 @@ describe('CJS', function () {
   }
   testCJS('require_assert');
   testCJS('require_assert_dot_strict');
+  testCJS('require_assert_slash_strict');
   testCJS('require_node_assert');
   testCJS('require_node_assert_dot_strict');
+  testCJS('require_node_assert_slash_strict');
 });
 
 describe('default behavior (with default options)', function () {
