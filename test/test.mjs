@@ -73,7 +73,7 @@ describe('default behavior (with default options)', function () {
     });
   }
 
-  testTransform('func');
+  testTransform('various_assertion_methods');
   testTransform('commonjs_singlevar');
   testTransform('assignment');
   testTransform('assignment_singlevar');
@@ -143,17 +143,6 @@ describe('with customized options', function () {
       'invariant',
       'nanoassert',
       'uvu/assert'
-    ]
-  });
-
-  testWithCustomization('func', {
-    variables: [
-      'assert'
-    ],
-    modules: [
-      'assert',
-      'power-assert',
-      'node:assert'
     ]
   });
 });
