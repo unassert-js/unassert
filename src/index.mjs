@@ -158,7 +158,6 @@ function createVisitor (options) {
 
   return {
     enter: function (currentNode, parentNode) {
-      let espathToRemove;
       switch (currentNode.type) {
         case syntax.ImportDeclaration: {
           const source = currentNode.source;
@@ -171,7 +170,7 @@ function createVisitor (options) {
           }
           const local = firstSpecifier.local;
           if (isAssertionVariableName(local)) {
-            espathToRemove = this.path().join('/');
+            const espathToRemove = this.path().join('/');
             pathToRemove[espathToRemove] = true;
             this.skip();
           }
@@ -179,6 +178,7 @@ function createVisitor (options) {
         }
         case syntax.VariableDeclarator: {
           if (isRemovalTarget(currentNode.id, currentNode.init)) {
+            let espathToRemove;
             if (parentNode.declarations.length === 1) {
               // remove parent VariableDeclaration
               // body/1/declarations/0 -> body/1
@@ -201,7 +201,7 @@ function createVisitor (options) {
           }
           if (isRemovalTarget(currentNode.left, currentNode.right)) {
             // remove parent ExpressionStatement
-            espathToRemove = this.path().slice(0, -1).join('/');
+            const espathToRemove = this.path().slice(0, -1).join('/');
             pathToRemove[espathToRemove] = true;
             this.skip();
           }
@@ -215,7 +215,7 @@ function createVisitor (options) {
           if (isAssertionFunction(callee) || isAssertionMethod(callee) || isConsoleAssert(callee)) {
             // remove parent ExpressionStatement
             // body/1/body/body/0/expression -> body/1/body/body/0
-            espathToRemove = this.path().slice(0, -1).join('/');
+            const espathToRemove = this.path().slice(0, -1).join('/');
             pathToRemove[espathToRemove] = true;
             this.skip();
           }
