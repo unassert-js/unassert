@@ -176,6 +176,8 @@ will remove assert variable declarations such as,
 * `const assert = require("node:assert/strict")`
 * `const assert = require("assert").strict`
 * `const assert = require("node:assert").strict`
+* `const { strict: assert } = require("assert")`
+* `const { strict: assert } = require("node:assert")`
 * `import assert from "assert"`
 * `import assert from "assert/strict"`
 * `import assert from "node:assert"`
@@ -184,8 +186,8 @@ will remove assert variable declarations such as,
 * `import * as assert from "node:assert"`
 * `import * as assert from "assert/strict"`
 * `import * as assert from "node:assert/strict"`
-* `import {strict as assert} from "assert"`
-* `import {strict as assert} from "node:assert"`
+* `import { strict as assert } from "assert"`
+* `import { strict as assert } from "node:assert"`
 
 and assignments.
 
