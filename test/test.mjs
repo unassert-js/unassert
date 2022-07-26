@@ -57,6 +57,8 @@ describe('CJS', function () {
   testCJS('require_node_assert');
   testCJS('require_node_assert_dot_strict');
   testCJS('require_node_assert_slash_strict');
+  testCJS('destructuring_strict_require_assert');
+  testCJS('destructuring_strict_require_node_assert');
 });
 
 describe('default behavior (with default options)', function () {
