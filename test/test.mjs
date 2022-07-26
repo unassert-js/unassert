@@ -1,7 +1,7 @@
 import { unassertAst, createVisitor } from '../src/index.mjs';
 import { strict as assert } from 'assert';
 import { resolve, dirname } from 'path';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { parse } from 'acorn';
 import { generate } from 'escodegen';
 import { replace } from 'estraverse';
@@ -12,19 +12,26 @@ function parseFixture (filepath) {
   return parse(readFileSync(filepath), { sourceType: 'module', ecmaVersion: '2022' });
 }
 
-function testWithFixture (ext, fixtureName) {
-  const fixtureFilepath = resolve(__dirname, 'fixtures', ext, `${fixtureName}.${ext}`);
+function createFixture ({ code, postlude, prelude }) {
+  return parse(prelude + '\n' + code + '\n' + postlude, { sourceType: 'module', ecmaVersion: '2022' });
+}
+
+function testWithGeneratedFixture (ext, code) {
+  const preludeFilepath = resolve(__dirname, 'fixtures', ext, `prelude.${ext}`);
+  const prelude = existsSync(preludeFilepath) ? readFileSync(preludeFilepath).toString() : '';
+  const postludeFilepath = resolve(__dirname, 'fixtures', ext, `postlude.${ext}`);
+  const postlude = readFileSync(postludeFilepath).toString();
   const expectedFilepath = resolve(__dirname, 'fixtures', ext, `expected.${ext}`);
   const expected = readFileSync(expectedFilepath).toString();
 
-  it('unassertAst ' + fixtureName, function () {
-    const ast = parseFixture(fixtureFilepath);
+  it('unassertAst ' + code, function () {
+    const ast = createFixture({ code, postlude, prelude });
     const modifiedAst = unassertAst(ast);
     const actual = generate(modifiedAst);
     assert.equal(actual + '\n', expected);
   });
-  it('createVisitor ' + fixtureName, function () {
-    const ast = parseFixture(fixtureFilepath);
+  it('createVisitor ' + code, function () {
+    const ast = createFixture({ code, postlude, prelude });
     const modifiedAst = replace(ast, createVisitor());
     const actual = generate(modifiedAst);
     assert.equal(actual + '\n', expected);
@@ -32,33 +39,33 @@ function testWithFixture (ext, fixtureName) {
 }
 
 describe('ESM', function () {
-  function testESM (fixtureName) {
-    testWithFixture('mjs', fixtureName);
+  function testESM (code) {
+    testWithGeneratedFixture('mjs', code);
   }
-  testESM('import_default_specifier');
-  testESM('import_default_specifier_node_protocol');
-  testESM('import_default_specifier_slash_strict');
-  testESM('import_default_specifier_node_protocol_slash_strict');
-  testESM('import_namespace_specifier');
-  testESM('import_namespace_specifier_node_protocol');
-  testESM('import_namespace_specifier_slash_strict');
-  testESM('import_namespace_specifier_node_protocol_slash_strict');
-  testESM('import_specifier_strict');
-  testESM('import_specifier_strict_node_protocol');
+  testESM("import assert from 'assert';");
+  testESM("import assert from 'node:assert';");
+  testESM("import assert from 'node:assert/strict';");
+  testESM("import assert from 'assert/strict';");
+  testESM("import * as assert from 'assert';");
+  testESM("import * as assert from 'node:assert';");
+  testESM("import * as assert from 'node:assert/strict';");
+  testESM("import * as assert from 'assert/strict';");
+  testESM("import { strict as assert } from 'assert';");
+  testESM("import { strict as assert } from 'node:assert';");
 });
 
 describe('CJS', function () {
-  function testCJS (fixtureName) {
-    testWithFixture('cjs', fixtureName);
+  function testCJS (code) {
+    testWithGeneratedFixture('cjs', code);
   }
-  testCJS('require_assert');
-  testCJS('require_assert_dot_strict');
-  testCJS('require_assert_slash_strict');
-  testCJS('require_node_assert');
-  testCJS('require_node_assert_dot_strict');
-  testCJS('require_node_assert_slash_strict');
-  testCJS('destructuring_strict_require_assert');
-  testCJS('destructuring_strict_require_node_assert');
+  testCJS("const assert = require('assert');");
+  testCJS("const assert = require('assert').strict;");
+  testCJS("const assert = require('assert/strict');");
+  testCJS("const assert = require('node:assert');");
+  testCJS("const assert = require('node:assert').strict;");
+  testCJS("const assert = require('node:assert/strict');");
+  testCJS("const { strict: assert } = require('assert');");
+  testCJS("const { strict: assert } = require('node:assert');");
 });
 
 describe('default behavior (with default options)', function () {
