@@ -45,6 +45,9 @@ function isLiteral (node) {
 function isIdentifier (node) {
   return node && node.type === syntax.Identifier;
 }
+function isObjectPattern (node) {
+  return node && node.type === syntax.ObjectPattern;
+}
 function isMemberExpression (node) {
   return node && node.type === syntax.MemberExpression;
 }
@@ -78,6 +81,14 @@ function createVisitor (options) {
     return config.variables.some((name) => id.name === name);
   }
 
+  function isDestructuredAssertionAssignment (objectPattern) {
+    if (objectPattern.properties.length !== 1) {
+      return false;
+    }
+    const { key, value } = objectPattern.properties[0];
+    return isIdentifier(key) && key.name === 'strict' && isAssertionVariableName(value);
+  }
+
   function isAssertionMethod (callee) {
     if (!isMemberExpression(callee)) {
       return false;
@@ -105,10 +116,15 @@ function createVisitor (options) {
   }
 
   const isRequireAssert = (id, init) => {
-    if (!isIdentifier(id)) {
-      return false;
-    }
-    if (!isAssertionVariableName(id)) {
+    if (isIdentifier(id)) {
+      if (!isAssertionVariableName(id)) {
+        return false;
+      }
+    } else if (isObjectPattern(id)) {
+      if (!isDestructuredAssertionAssignment(id)) {
+        return false;
+      }
+    } else {
       return false;
     }
     if (!isCallExpression(init)) {
