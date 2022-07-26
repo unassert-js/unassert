@@ -162,7 +162,9 @@ For example,
 {
   modules: [
     'assert',
-    'node:assert'
+    'assert/strict',
+    'node:assert',
+    'node:assert/strict'
   ]
 ```
 
@@ -170,12 +172,18 @@ will remove assert variable declarations such as,
 
 * `const assert = require("assert")`
 * `const assert = require("node:assert")`
+* `const assert = require("assert/strict")`
+* `const assert = require("node:assert/strict")`
 * `const assert = require("assert").strict`
 * `const assert = require("node:assert").strict`
 * `import assert from "assert"`
+* `import assert from "assert/strict"`
 * `import assert from "node:assert"`
+* `import assert from "node:assert/strict"`
 * `import * as assert from "assert"`
 * `import * as assert from "node:assert"`
+* `import * as assert from "assert/strict"`
+* `import * as assert from "node:assert/strict"`
 * `import {strict as assert} from "assert"`
 * `import {strict as assert} from "node:assert"`
 
@@ -183,6 +191,8 @@ and assignments.
 
 * `assert = require("assert")`
 * `assert = require("node:assert")`
+* `assert = require("assert/strict")`
+* `assert = require("node:assert/strict")`
 * `assert = require("assert").strict`
 * `assert = require("node:assert").strict`
 
@@ -207,7 +217,9 @@ Returns default options object for `unassertAst` and `createVisitor` function. I
   ],
   modules: [
     'assert',
-    'node:assert'
+    'assert/strict',
+    'node:assert',
+    'node:assert/strict'
   ]
 }
 ```

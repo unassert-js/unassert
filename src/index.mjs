@@ -18,7 +18,9 @@ function defaultOptions () {
     ],
     modules: [
       'assert',
-      'node:assert'
+      'assert/strict',
+      'node:assert',
+      'node:assert/strict'
     ]
   };
 }

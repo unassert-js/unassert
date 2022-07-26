@@ -1,5 +1,5 @@
 var add, assert;
-assert = require('assert');
+assert = require('assert').strict;
 add = function (a, b) {
     console.assert(typeof a === 'number');
     assert(!isNaN(a));
