@@ -112,8 +112,7 @@ function createVisitor (options) {
     if (!isMemberExpression(callee)) {
       return false;
     }
-    const obj = callee.object;
-    const prop = callee.property;
+    const { object: obj, property: prop } = callee;
     return isIdentifier(obj) && obj.name === 'console' &&
       isIdentifier(prop) && prop.name === 'assert';
   }
