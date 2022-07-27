@@ -101,8 +101,8 @@ describe('with default options', () => {
 describe('with custom options', () => {
   testWithFixture('customization_httpassert', {
     variables: [
-      'assert',
-      'ok'
+      // 'assert',
+      // 'ok'
     ],
     modules: [
       'http-assert',

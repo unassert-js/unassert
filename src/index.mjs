@@ -122,10 +122,10 @@ function createVisitor (options) {
     if (!isLiteral(arg) || !isAssertionModuleName(arg)) {
       return false;
     }
+    // register local identifier as assertion variable
     if (isIdentifier(id)) {
-      if (isAssertionVariableName(id)) {
-        return true;
-      }
+      targetVariables.add(id.name);
+      return true;
     } else if (isObjectPattern(id)) {
       if (isDestructuredAssertionAssignment(id)) {
         return true;
