@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('http-assert');
-var ok = require('assert');
+var ok = require('node:assert');
 
 try {
     assert(username == 'foo', 401, 'authentication failed');
