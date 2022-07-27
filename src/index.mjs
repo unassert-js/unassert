@@ -77,12 +77,12 @@ function createVisitor (options) {
     return targetVariables.has(id.name);
   }
 
-  function isDestructuredAssertionAssignment (objectPattern) {
-    if (objectPattern.properties.length !== 1) {
-      return false;
+  function handleDestructuredAssertionAssignment (objectPattern) {
+    for (const { value } of objectPattern.properties) {
+      if (isIdentifier(value)) {
+        targetVariables.add(value.name);
+      }
     }
-    const { key, value } = objectPattern.properties[0];
-    return isIdentifier(key) && key.name === 'strict' && isAssertionVariableName(value);
   }
 
   function isAssertionMethod (callee) {
@@ -110,6 +110,15 @@ function createVisitor (options) {
       isIdentifier(prop) && prop.name === 'assert';
   }
 
+  function registerAssertionVariables (id) {
+    // register local identifier as assertion variable
+    if (isIdentifier(id)) {
+      targetVariables.add(id.name);
+    } else if (isObjectPattern(id)) {
+      handleDestructuredAssertionAssignment(id);
+    }
+  }
+
   const isRequireAssert = (id, init) => {
     if (!isCallExpression(init)) {
       return false;
@@ -122,16 +131,7 @@ function createVisitor (options) {
     if (!isLiteral(arg) || !isAssertionModuleName(arg)) {
       return false;
     }
-    // register local identifier as assertion variable
-    if (isIdentifier(id)) {
-      targetVariables.add(id.name);
-      return true;
-    } else if (isObjectPattern(id)) {
-      if (isDestructuredAssertionAssignment(id)) {
-        return true;
-      }
-    }
-    return false;
+    return isIdentifier(id) || isObjectPattern(id);
   };
 
   const isRequireAssertStrict = (id, init) => {
@@ -173,6 +173,7 @@ function createVisitor (options) {
         }
         case syntax.VariableDeclarator: {
           if (isRemovalTarget(currentNode.id, currentNode.init)) {
+            registerAssertionVariables(currentNode.id);
             let espathToRemove;
             if (parentNode.declarations.length === 1) {
               // remove parent VariableDeclaration
@@ -195,6 +196,7 @@ function createVisitor (options) {
             return;
           }
           if (isRemovalTarget(currentNode.left, currentNode.right)) {
+            registerAssertionVariables(currentNode.left);
             // remove parent ExpressionStatement
             const espathToRemove = this.path().slice(0, -1).join('/');
             pathToRemove[espathToRemove] = true;

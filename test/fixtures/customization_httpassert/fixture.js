@@ -1,12 +1,12 @@
 'use strict';
 
-var assert = require('http-assert');
-var ok = require('node:assert');
+const assert = require('http-assert');
+const { ok, equal: eq, deepEqual: deq } = require('node:assert');
 
 try {
     assert(username == 'foo', 401, 'authentication failed');
 } catch (err) {
-    ok(err.status == 401);
-    ok(err.message == 'authentication failed');
+    eq(err.status, 401);
+    deq(err.message, 'authentication failed');
     ok(err.expose);
 }
