@@ -124,4 +124,18 @@ describe('with custom options', () => {
       'uvu/assert'
     ]
   });
+
+  testWithFixture('variable-tracking', {
+    variables: [
+      'assert',
+      // 'invariant',
+      'uvuassert'
+    ],
+    modules: [
+      'power-assert',
+      'invariant',
+      'nanoassert',
+      'uvu/assert'
+    ]
+  });
 });
