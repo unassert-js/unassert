@@ -77,14 +77,6 @@ function createVisitor (options) {
     return targetVariables.has(id.name);
   }
 
-  function handleDestructuredAssertionAssignment (objectPattern) {
-    for (const { value } of objectPattern.properties) {
-      if (isIdentifier(value)) {
-        targetVariables.add(value.name);
-      }
-    }
-  }
-
   function isAssertionMethod (callee) {
     if (!isMemberExpression(callee)) {
       return false;
@@ -108,6 +100,14 @@ function createVisitor (options) {
     const { object: obj, property: prop } = callee;
     return isIdentifier(obj) && obj.name === 'console' &&
       isIdentifier(prop) && prop.name === 'assert';
+  }
+
+  function handleDestructuredAssertionAssignment (objectPattern) {
+    for (const { value } of objectPattern.properties) {
+      if (isIdentifier(value)) {
+        targetVariables.add(value.name);
+      }
+    }
   }
 
   function registerAssertionVariables (id) {
