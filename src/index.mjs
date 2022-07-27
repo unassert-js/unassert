@@ -60,21 +60,15 @@ function isExpressionStatement (node) {
 
 function createVisitor (options) {
   const config = Object.assign(defaultOptions(), options);
-
-  function isAssertionModuleName (lit) {
-    if (!isLiteral(lit)) {
-      return false;
-    }
-    return config.modules.some((name) => lit.value === name);
-  }
-
+  const targetModules = new Set(config.modules);
   const targetVariables = new Set(config.variables);
 
+  function isAssertionModuleName (lit) {
+    return isLiteral(lit) && targetModules.has(lit.value);
+  }
+
   function isAssertionVariableName (id) {
-    if (!isIdentifier(id)) {
-      return false;
-    }
-    return targetVariables.has(id.name);
+    return isIdentifier(id) && targetVariables.has(id.name);
   }
 
   function isAssertionMethod (callee) {
