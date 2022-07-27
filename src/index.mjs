@@ -57,15 +57,6 @@ function isCallExpression (node) {
 function isExpressionStatement (node) {
   return node && node.type === syntax.ExpressionStatement;
 }
-function isImportDefaultSpecifier (node) {
-  return node && node.type === syntax.ImportDefaultSpecifier;
-}
-function isImportNamespaceSpecifier (node) {
-  return node && node.type === syntax.ImportNamespaceSpecifier;
-}
-function isImportSpecifier (node) {
-  return node && node.type === syntax.ImportSpecifier;
-}
 
 function createVisitor (options) {
   const config = Object.assign(defaultOptions(), options);
@@ -172,14 +163,11 @@ function createVisitor (options) {
           const espathToRemove = this.path().join('/');
           pathToRemove[espathToRemove] = true;
           this.skip();
-
-          const firstSpecifier = currentNode.specifiers[0];
-          if (!(isImportDefaultSpecifier(firstSpecifier) || isImportNamespaceSpecifier(firstSpecifier) || isImportSpecifier(firstSpecifier))) {
-            return;
-          }
-          const local = firstSpecifier.local;
           // register local identifier as assertion variable
-          targetVariables.add(local.name);
+          for (const specifier of currentNode.specifiers) {
+            const local = specifier.local;
+            targetVariables.add(local.name);
+          }
           break;
         }
         case syntax.VariableDeclarator: {

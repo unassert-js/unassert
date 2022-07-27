@@ -132,6 +132,7 @@ describe('with custom options', () => {
       // 'uvuassert'
     ],
     modules: [
+      'node:assert/strict',
       'power-assert',
       'invariant',
       'nanoassert',

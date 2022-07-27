@@ -1,11 +1,13 @@
 import invariant from 'invariant';
 import * as uvuassert from 'uvu/assert';
 import { strict as assert } from 'power-assert';
+import nodeassert, { ok, equal as eq } from 'node:assert/strict';
 
 function add (a, b) {
     assert(!isNaN(a));
-    assert.equal(typeof b, 'number');
-    assert.ok(!isNaN(b));
+    nodeassert(typeof a === 'number');
+    eq(typeof b, 'number');
+    ok(!isNaN(b));
 
     uvuassert.is(Math.sqrt(4), 2);
     uvuassert.is(Math.sqrt(144), 12);
