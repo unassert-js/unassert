@@ -1,4 +1,5 @@
 import invariant from 'invariant';
+import nassert from 'nanoassert';
 import * as uvuassert from 'uvu/assert';
 import { strict as assert } from 'power-assert';
 import nodeassert, { ok, equal as eq } from 'node:assert/strict';
@@ -8,6 +9,8 @@ function add (a, b) {
     nodeassert(typeof a === 'number');
     eq(typeof b, 'number');
     ok(!isNaN(b));
+
+    nassert(!isNaN(a));
 
     uvuassert.is(Math.sqrt(4), 2);
     uvuassert.is(Math.sqrt(144), 12);

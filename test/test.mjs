@@ -99,10 +99,8 @@ describe('with default options', () => {
 });
 
 describe('with custom options', () => {
-  testWithFixture('customization_httpassert', {
+  testWithFixture('custom_modules_cjs', {
     variables: [
-      // 'assert',
-      // 'ok'
     ],
     modules: [
       'http-assert',
@@ -110,26 +108,8 @@ describe('with custom options', () => {
     ]
   });
 
-  testWithFixture('customization_various_modules', {
+  testWithFixture('custom_modules_mjs', {
     variables: [
-      'assert',
-      'invariant',
-      'nassert',
-      'uassert'
-    ],
-    modules: [
-      'power-assert',
-      'invariant',
-      'nanoassert',
-      'uvu/assert'
-    ]
-  });
-
-  testWithFixture('variable-tracking', {
-    variables: [
-      // 'assert',
-      // 'invariant',
-      // 'uvuassert'
     ],
     modules: [
       'node:assert/strict',
