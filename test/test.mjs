@@ -127,9 +127,9 @@ describe('with custom options', () => {
 
   testWithFixture('variable-tracking', {
     variables: [
-      'assert',
+      // 'assert',
       // 'invariant',
-      'uvuassert'
+      // 'uvuassert'
     ],
     modules: [
       'power-assert',

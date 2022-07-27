@@ -77,11 +77,13 @@ function createVisitor (options) {
     return config.modules.some((name) => lit.value === name);
   }
 
+  const targetVariables = new Set(config.variables);
+
   function isAssertionVariableName (id) {
     if (!isIdentifier(id)) {
       return false;
     }
-    return config.variables.some((name) => id.name === name);
+    return targetVariables.has(id.name);
   }
 
   function isDestructuredAssertionAssignment (objectPattern) {
@@ -166,16 +168,18 @@ function createVisitor (options) {
           if (!(isAssertionModuleName(source))) {
             return;
           }
+          // target assertion module
+          const espathToRemove = this.path().join('/');
+          pathToRemove[espathToRemove] = true;
+          this.skip();
+
           const firstSpecifier = currentNode.specifiers[0];
           if (!(isImportDefaultSpecifier(firstSpecifier) || isImportNamespaceSpecifier(firstSpecifier) || isImportSpecifier(firstSpecifier))) {
             return;
           }
           const local = firstSpecifier.local;
-          if (isAssertionVariableName(local)) {
-            const espathToRemove = this.path().join('/');
-            pathToRemove[espathToRemove] = true;
-            this.skip();
-          }
+          // register local identifier as assertion variable
+          targetVariables.add(local.name);
           break;
         }
         case syntax.VariableDeclarator: {
