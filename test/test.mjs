@@ -38,85 +38,68 @@ function testWithGeneratedFixture (ext, code) {
   });
 }
 
-describe('ESM', function () {
-  function testESM (code) {
-    testWithGeneratedFixture('mjs', code);
-  }
-  testESM("import assert from 'assert';");
-  testESM("import assert from 'node:assert';");
-  testESM("import assert from 'node:assert/strict';");
-  testESM("import assert from 'assert/strict';");
-  testESM("import * as assert from 'assert';");
-  testESM("import * as assert from 'node:assert';");
-  testESM("import * as assert from 'node:assert/strict';");
-  testESM("import * as assert from 'assert/strict';");
-  testESM("import { strict as assert } from 'assert';");
-  testESM("import { strict as assert } from 'node:assert';");
+function testESM (code) {
+  testWithGeneratedFixture('mjs', code);
+}
+
+function testCJS (code) {
+  testWithGeneratedFixture('cjs', code);
+}
+
+function testWithFixture (fixtureName, options) {
+  const fixtureFilepath = resolve(__dirname, 'fixtures', fixtureName, 'fixture.js');
+  const expectedFilepath = resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
+  const expected = readFileSync(expectedFilepath).toString();
+
+  it('unassertAst ' + fixtureName, function () {
+    const ast = parseFixture(fixtureFilepath);
+    const modifiedAst = unassertAst(ast, options);
+    const actual = generate(modifiedAst);
+    assert.equal(actual + '\n', expected);
+  });
+  it('createVisitor ' + fixtureName, function () {
+    const ast = parseFixture(fixtureFilepath);
+    const modifiedAst = replace(ast, createVisitor(options));
+    const actual = generate(modifiedAst);
+    assert.equal(actual + '\n', expected);
+  });
+}
+
+describe('with default options', () => {
+  testWithFixture('various_assertion_methods');
+  testWithFixture('commonjs_singlevar');
+  testWithFixture('assignment');
+  testWithFixture('assignment_singlevar');
+  testWithFixture('not_an_expression_statement');
+  testWithFixture('non_block_statement');
+
+  describe('removal of ESM imports', function () {
+    testESM("import assert from 'assert';");
+    testESM("import assert from 'node:assert';");
+    testESM("import assert from 'node:assert/strict';");
+    testESM("import assert from 'assert/strict';");
+    testESM("import * as assert from 'assert';");
+    testESM("import * as assert from 'node:assert';");
+    testESM("import * as assert from 'node:assert/strict';");
+    testESM("import * as assert from 'assert/strict';");
+    testESM("import { strict as assert } from 'assert';");
+    testESM("import { strict as assert } from 'node:assert';");
+  });
+
+  describe('removal of CJS requires', function () {
+    testCJS("const assert = require('assert');");
+    testCJS("const assert = require('assert').strict;");
+    testCJS("const assert = require('assert/strict');");
+    testCJS("const assert = require('node:assert');");
+    testCJS("const assert = require('node:assert').strict;");
+    testCJS("const assert = require('node:assert/strict');");
+    testCJS("const { strict: assert } = require('assert');");
+    testCJS("const { strict: assert } = require('node:assert');");
+  });
 });
 
-describe('CJS', function () {
-  function testCJS (code) {
-    testWithGeneratedFixture('cjs', code);
-  }
-  testCJS("const assert = require('assert');");
-  testCJS("const assert = require('assert').strict;");
-  testCJS("const assert = require('assert/strict');");
-  testCJS("const assert = require('node:assert');");
-  testCJS("const assert = require('node:assert').strict;");
-  testCJS("const assert = require('node:assert/strict');");
-  testCJS("const { strict: assert } = require('assert');");
-  testCJS("const { strict: assert } = require('node:assert');");
-});
-
-describe('default behavior (with default options)', function () {
-  function testTransform (fixtureName) {
-    const fixtureFilepath = resolve(__dirname, 'fixtures', fixtureName, 'fixture.js');
-    const expectedFilepath = resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
-    const expected = readFileSync(expectedFilepath).toString();
-
-    it('unassertAst ' + fixtureName, function () {
-      const ast = parseFixture(fixtureFilepath);
-      const modifiedAst = unassertAst(ast);
-      const actual = generate(modifiedAst);
-      assert.equal(actual + '\n', expected);
-    });
-    it('createVisitor ' + fixtureName, function () {
-      const ast = parseFixture(fixtureFilepath);
-      const modifiedAst = replace(ast, createVisitor());
-      const actual = generate(modifiedAst);
-      assert.equal(actual + '\n', expected);
-    });
-  }
-
-  testTransform('various_assertion_methods');
-  testTransform('commonjs_singlevar');
-  testTransform('assignment');
-  testTransform('assignment_singlevar');
-  testTransform('not_an_expression_statement');
-  testTransform('non_block_statement');
-});
-
-describe('with customized options', function () {
-  function testWithCustomization (fixtureName, options) {
-    const fixtureFilepath = resolve(__dirname, 'fixtures', fixtureName, 'fixture.js');
-    const expectedFilepath = resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
-    const expected = readFileSync(expectedFilepath).toString();
-
-    it('unassertAst ' + fixtureName, function () {
-      const ast = parseFixture(fixtureFilepath);
-      const modifiedAst = unassertAst(ast, options);
-      const actual = generate(modifiedAst);
-      assert.equal(actual + '\n', expected);
-    });
-    it('createVisitor ' + fixtureName, function () {
-      const ast = parseFixture(fixtureFilepath);
-      const modifiedAst = replace(ast, createVisitor(options));
-      const actual = generate(modifiedAst);
-      assert.equal(actual + '\n', expected);
-    });
-  }
-
-  testWithCustomization('customization_httpassert', {
+describe('with custom options', () => {
+  testWithFixture('customization_httpassert', {
     variables: [
       'assert',
       'ok'
@@ -127,7 +110,7 @@ describe('with customized options', function () {
     ]
   });
 
-  testWithCustomization('customization_various_modules', {
+  testWithFixture('customization_various_modules', {
     variables: [
       'assert',
       'invariant',
