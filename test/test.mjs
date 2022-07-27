@@ -24,18 +24,16 @@ function testWithGeneratedFixture (ext, code) {
   const expectedFilepath = resolve(__dirname, 'fixtures', ext, `expected.${ext}`);
   const expected = readFileSync(expectedFilepath).toString();
 
-  it('unassertAst ' + code, function () {
-    const ast = createFixture({ code, postlude, prelude });
-    const modifiedAst = unassertAst(ast);
-    const actual = generate(modifiedAst);
-    assert.equal(actual + '\n', expected);
-  });
-  it('createVisitor ' + code, function () {
-    const ast = createFixture({ code, postlude, prelude });
-    const modifiedAst = replace(ast, createVisitor());
-    const actual = generate(modifiedAst);
-    assert.equal(actual + '\n', expected);
-  });
+  function deftest (name, fun) {
+    it(`${name}: ${code}`, function () {
+      const ast = createFixture({ code, postlude, prelude });
+      const modifiedAst = fun(ast);
+      const actual = generate(modifiedAst);
+      assert.equal(actual + '\n', expected);
+    });
+  }
+  deftest('unassertAst', (ast) => unassertAst(ast));
+  deftest('createVisitor', (ast) => replace(ast, createVisitor()));
 }
 
 function testESM (code) {
@@ -51,23 +49,21 @@ function testWithFixture (fixtureName, options) {
   const expectedFilepath = resolve(__dirname, 'fixtures', fixtureName, 'expected.js');
   const expected = readFileSync(expectedFilepath).toString();
 
-  it('unassertAst ' + fixtureName, function () {
-    const ast = parseFixture(fixtureFilepath);
-    const modifiedAst = unassertAst(ast, options);
-    const actual = generate(modifiedAst);
-    assert.equal(actual + '\n', expected);
-  });
-  it('createVisitor ' + fixtureName, function () {
-    const ast = parseFixture(fixtureFilepath);
-    const modifiedAst = replace(ast, createVisitor(options));
-    const actual = generate(modifiedAst);
-    assert.equal(actual + '\n', expected);
-  });
+  function deftest (name, fun) {
+    it(`${name}: ${fixtureName}`, function () {
+      const ast = parseFixture(fixtureFilepath);
+      const modifiedAst = fun(ast);
+      const actual = generate(modifiedAst);
+      assert.equal(actual + '\n', expected);
+    });
+  }
+  deftest('unassertAst', (ast) => unassertAst(ast, options));
+  deftest('createVisitor', (ast) => replace(ast, createVisitor(options)));
 }
 
 describe('with default options', () => {
   testWithFixture('various_assertion_methods');
-  testWithFixture('commonjs_singlevar');
+  testWithFixture('variable_declarator_singlevar');
   testWithFixture('assignment');
   testWithFixture('assignment_singlevar');
   testWithFixture('not_an_expression_statement');
