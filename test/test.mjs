@@ -122,26 +122,8 @@ describe('with customized options', function () {
       'ok'
     ],
     modules: [
-      'assert',
-      'http-assert'
-    ]
-  });
-
-  testWithCustomization('customization_powerassert_cjs', {
-    variables: [
-      'assert'
-    ],
-    modules: [
-      'power-assert'
-    ]
-  });
-
-  testWithCustomization('customization_powerassert_esm', {
-    variables: [
-      'assert'
-    ],
-    modules: [
-      'power-assert'
+      'http-assert',
+      'node:assert'
     ]
   });
 
@@ -153,8 +135,7 @@ describe('with customized options', function () {
       'uassert'
     ],
     modules: [
-      'assert',
-      'node:assert',
+      'power-assert',
       'invariant',
       'nanoassert',
       'uvu/assert'

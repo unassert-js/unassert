@@ -1,4 +1,4 @@
-import {strict as assert} from 'node:assert';
+import { strict as assert } from 'power-assert';
 import invariant from 'invariant';
 import nassert from 'nanoassert';
 import * as uassert from 'uvu/assert';
