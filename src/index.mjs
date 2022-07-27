@@ -111,17 +111,6 @@ function createVisitor (options) {
   }
 
   const isRequireAssert = (id, init) => {
-    if (isIdentifier(id)) {
-      if (!isAssertionVariableName(id)) {
-        return false;
-      }
-    } else if (isObjectPattern(id)) {
-      if (!isDestructuredAssertionAssignment(id)) {
-        return false;
-      }
-    } else {
-      return false;
-    }
     if (!isCallExpression(init)) {
       return false;
     }
@@ -130,7 +119,19 @@ function createVisitor (options) {
       return false;
     }
     const arg = init.arguments[0];
-    return (isLiteral(arg) && isAssertionModuleName(arg));
+    if (!isLiteral(arg) || !isAssertionModuleName(arg)) {
+      return false;
+    }
+    if (isIdentifier(id)) {
+      if (isAssertionVariableName(id)) {
+        return true;
+      }
+    } else if (isObjectPattern(id)) {
+      if (isDestructuredAssertionAssignment(id)) {
+        return true;
+      }
+    }
+    return false;
   };
 
   const isRequireAssertStrict = (id, init) => {
