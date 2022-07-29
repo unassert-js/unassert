@@ -14,7 +14,6 @@ import { ast as esutilsAst } from 'esutils';
 function defaultOptions () {
   return {
     variables: [
-      'assert'
     ],
     modules: [
       'assert',
