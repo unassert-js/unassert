@@ -215,7 +215,6 @@ Returns default options object for `unassertAst` and `createVisitor` function. I
 ```javascript
 {
   variables: [
-    'assert'
   ],
   modules: [
     'assert',
@@ -235,16 +234,10 @@ options:
 
 ```javascript
 {
-  variables: [
-    'assert',
-    'invariant',
-    'nassert',
-    'uassert'
-  ],
   modules: [
-    'assert',
-    'power-assert',
     'node:assert',
+    'node:assert/strict',
+    'power-assert',
     'invariant',
     'nanoassert',
     'uvu/assert'
@@ -255,26 +248,30 @@ options:
 input:
 
 ```javascript
-import assert from 'power-assert';
 import invariant from 'invariant';
 import nassert from 'nanoassert';
-import * as uassert from 'uvu/assert';
+import * as uvuassert from 'uvu/assert';
+import { strict as powerAssert } from 'power-assert';
+import { default as looseAssert } from 'node:assert';
+import strictAssert, { ok, equal as eq } from 'node:assert/strict';
 
 function add (a, b) {
-    assert(!isNaN(a));
-    assert.equal(typeof b, 'number');
-    assert.ok(!isNaN(b));
+  strictAssert(!isNaN(a));
+  looseAssert(typeof a === 'number');
+  eq(typeof b, 'number');
+  ok(!isNaN(b));
+  powerAssert(typeof a === typeof b);
 
-    nassert(!isNaN(a));
+  nassert(!isNaN(a));
 
-    uassert.is(Math.sqrt(4), 2);
-    uassert.is(Math.sqrt(144), 12);
-    uassert.is(Math.sqrt(2), Math.SQRT2);
+  uvuassert.is(Math.sqrt(4), 2);
+  uvuassert.is(Math.sqrt(144), 12);
+  uvuassert.is(Math.sqrt(2), Math.SQRT2);
 
-    invariant(someTruthyVal, 'This will not throw');
-    invariant(someFalseyVal, 'This will throw an error with this message');
+  invariant(someTruthyVal, 'This will not throw');
+  invariant(someFalseyVal, 'This will throw an error with this message');
 
-    return a + b;
+  return a + b;
 }
 ```
 
