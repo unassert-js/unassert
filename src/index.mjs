@@ -156,7 +156,7 @@ function createVisitor (options) {
 
   const isRemovalTarget = (id, init) => isRequireAssert(id, init) || isRequireAssertStrict(id, init);
 
-  const pathToRemove = {};
+  const pathToRemove = new Set();
 
   return {
     enter: function (currentNode, parentNode) {
@@ -168,7 +168,7 @@ function createVisitor (options) {
           }
           // target assertion module
           const espathToRemove = this.path().join('/');
-          pathToRemove[espathToRemove] = true;
+          pathToRemove.add(espathToRemove);
           this.skip();
           // register local identifier as assertion variable
           registerAssertionVariables(currentNode);
@@ -186,7 +186,7 @@ function createVisitor (options) {
               // single var pattern
               espathToRemove = this.path().join('/');
             }
-            pathToRemove[espathToRemove] = true;
+            pathToRemove.add(espathToRemove);
             this.skip();
           }
           break;
@@ -202,7 +202,7 @@ function createVisitor (options) {
             registerAssertionVariables(currentNode.left);
             // remove parent ExpressionStatement
             const espathToRemove = this.path().slice(0, -1).join('/');
-            pathToRemove[espathToRemove] = true;
+            pathToRemove.add(espathToRemove);
             this.skip();
           }
           break;
@@ -216,7 +216,7 @@ function createVisitor (options) {
             // remove parent ExpressionStatement
             // body/1/body/body/0/expression -> body/1/body/body/0
             const espathToRemove = this.path().slice(0, -1).join('/');
-            pathToRemove[espathToRemove] = true;
+            pathToRemove.add(espathToRemove);
             this.skip();
           }
           break;
@@ -225,7 +225,7 @@ function createVisitor (options) {
     },
     leave: function (currentNode, parentNode) {
       const path = this.path();
-      if (path && pathToRemove[path.join('/')]) {
+      if (path && pathToRemove.has(path.join('/'))) {
         const key = path[path.length - 1];
         if (isNonBlockChildOfIfStatementOrLoop(currentNode, parentNode, key)) {
           return {
