@@ -56,6 +56,9 @@ function isCallExpression (node) {
 function isExpressionStatement (node) {
   return node && node.type === syntax.ExpressionStatement;
 }
+function isImportDeclaration (node) {
+  return node && node.type === syntax.ImportDeclaration;
+}
 
 function createVisitor (options) {
   const config = Object.assign(defaultOptions(), options);
@@ -103,12 +106,22 @@ function createVisitor (options) {
     }
   }
 
-  function registerAssertionVariables (id) {
-    // register local identifier as assertion variable
-    if (isIdentifier(id)) {
-      targetVariables.add(id.name);
-    } else if (isObjectPattern(id)) {
-      handleDestructuredAssertionAssignment(id);
+  function handleImportSpecifiers (importDeclaration) {
+    for (const { local } of importDeclaration.specifiers) {
+      if (isIdentifier(local)) {
+        targetVariables.add(local.name);
+      }
+    }
+  }
+
+  // register local identifier as assertion variable
+  function registerAssertionVariables (node) {
+    if (isIdentifier(node)) {
+      targetVariables.add(node.name);
+    } else if (isObjectPattern(node)) {
+      handleDestructuredAssertionAssignment(node);
+    } else if (isImportDeclaration(node)) {
+      handleImportSpecifiers(node);
     }
   }
 
@@ -158,10 +171,7 @@ function createVisitor (options) {
           pathToRemove[espathToRemove] = true;
           this.skip();
           // register local identifier as assertion variable
-          for (const specifier of currentNode.specifiers) {
-            const local = specifier.local;
-            targetVariables.add(local.name);
-          }
+          registerAssertionVariables(currentNode);
           break;
         }
         case syntax.VariableDeclarator: {
