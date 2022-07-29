@@ -1,8 +1,8 @@
 function add(a, b) {
-    if (assert(a)) {
+    if (isTrue(a)) {
         return null;
     }
-    if (!assert(b)) {
+    if (!isTrue(b)) {
         return null;
     }
     return a + b;

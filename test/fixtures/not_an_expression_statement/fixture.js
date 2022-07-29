@@ -1,10 +1,10 @@
 function add(a, b) {
-    assert(!isNaN(a), 'assertion message');
-    if (assert(a)) {
+    isTrue(!isNaN(a), 'message');
+    if (isTrue(a)) {
         return null;
     }
     console.assert(a);
-    if (!assert(b)) {
+    if (!isTrue(b)) {
         return null;
     }
     return a + b;

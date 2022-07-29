@@ -66,7 +66,6 @@ describe('with default options', () => {
   testWithFixture('variable_declarator_singlevar');
   testWithFixture('assignment');
   testWithFixture('assignment_singlevar');
-  testWithFixture('not_an_expression_statement');
   testWithFixture('non_block_statement');
 
   describe('removal of ESM imports', function () {
@@ -113,6 +112,12 @@ describe('with custom options', () => {
       'invariant',
       'nanoassert',
       'uvu/assert'
+    ]
+  });
+
+  testWithFixture('not_an_expression_statement', {
+    variables: [
+      'isTrue'
     ]
   });
 });
