@@ -98,26 +98,27 @@ function createVisitor (options) {
       isIdentifier(prop) && prop.name === 'assert';
   }
 
+  function registerIdentifierAsAssertionVariable (id) {
+    if (isIdentifier(id)) {
+      targetVariables.add(id.name);
+    }
+  }
+
   function handleDestructuredAssertionAssignment (objectPattern) {
     for (const { value } of objectPattern.properties) {
-      if (isIdentifier(value)) {
-        targetVariables.add(value.name);
-      }
+      registerIdentifierAsAssertionVariable(value);
     }
   }
 
   function handleImportSpecifiers (importDeclaration) {
     for (const { local } of importDeclaration.specifiers) {
-      if (isIdentifier(local)) {
-        targetVariables.add(local.name);
-      }
+      registerIdentifierAsAssertionVariable(local);
     }
   }
 
-  // register local identifier as assertion variable
   function registerAssertionVariables (node) {
     if (isIdentifier(node)) {
-      targetVariables.add(node.name);
+      registerIdentifierAsAssertionVariable(node);
     } else if (isObjectPattern(node)) {
       handleDestructuredAssertionAssignment(node);
     } else if (isImportDeclaration(node)) {
