@@ -79,6 +79,8 @@ describe('with default options', () => {
     testESM("import * as assert from 'assert/strict';");
     testESM("import { strict as assert } from 'assert';");
     testESM("import { strict as assert } from 'node:assert';");
+    testESM("import { default as assert } from 'assert';");
+    testESM("import { default as assert } from 'node:assert';");
   });
 
   describe('removal of CJS requires', function () {
@@ -107,6 +109,7 @@ describe('with custom options', () => {
     variables: [
     ],
     modules: [
+      'node:assert',
       'node:assert/strict',
       'power-assert',
       'invariant',
