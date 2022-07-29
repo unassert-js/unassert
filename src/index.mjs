@@ -167,17 +167,16 @@ function createVisitor (options) {
           if (!(isAssertionModuleName(source))) {
             return;
           }
-          // target assertion module
+          // remove ImportDeclaration
           const espathToRemove = this.path().join('/');
           pathToRemove.add(espathToRemove);
           this.skip();
-          // register local identifier as assertion variable
+          // register local identifier(s) as assertion variable
           registerAssertionVariables(currentNode);
           break;
         }
         case syntax.VariableDeclarator: {
           if (isRemovalTarget(currentNode.id, currentNode.init)) {
-            registerAssertionVariables(currentNode.id);
             let espathToRemove;
             if (parentNode.declarations.length === 1) {
               // remove parent VariableDeclaration
@@ -189,6 +188,8 @@ function createVisitor (options) {
             }
             pathToRemove.add(espathToRemove);
             this.skip();
+            // register local identifier(s) as assertion variable
+            registerAssertionVariables(currentNode.id);
           }
           break;
         }
@@ -200,11 +201,12 @@ function createVisitor (options) {
             return;
           }
           if (isRemovalTarget(currentNode.left, currentNode.right)) {
-            registerAssertionVariables(currentNode.left);
             // remove parent ExpressionStatement
             const espathToRemove = this.path().slice(0, -1).join('/');
             pathToRemove.add(espathToRemove);
             this.skip();
+            // register local identifier(s) as assertion variable
+            registerAssertionVariables(currentNode.left);
           }
           break;
         }
