@@ -13,9 +13,6 @@ import { ast as esutilsAst } from 'esutils';
 
 function defaultOptions () {
   return {
-    variables: [
-      'assert'
-    ],
     modules: [
       'assert',
       'assert/strict',
@@ -57,39 +54,21 @@ function isCallExpression (node) {
 function isExpressionStatement (node) {
   return node && node.type === syntax.ExpressionStatement;
 }
-function isImportDefaultSpecifier (node) {
-  return node && node.type === syntax.ImportDefaultSpecifier;
-}
-function isImportNamespaceSpecifier (node) {
-  return node && node.type === syntax.ImportNamespaceSpecifier;
-}
-function isImportSpecifier (node) {
-  return node && node.type === syntax.ImportSpecifier;
+function isImportDeclaration (node) {
+  return node && node.type === syntax.ImportDeclaration;
 }
 
 function createVisitor (options) {
   const config = Object.assign(defaultOptions(), options);
+  const targetModules = new Set(config.modules);
+  const targetVariables = new Set(config.variables);
 
   function isAssertionModuleName (lit) {
-    if (!isLiteral(lit)) {
-      return false;
-    }
-    return config.modules.some((name) => lit.value === name);
+    return isLiteral(lit) && targetModules.has(lit.value);
   }
 
   function isAssertionVariableName (id) {
-    if (!isIdentifier(id)) {
-      return false;
-    }
-    return config.variables.some((name) => id.name === name);
-  }
-
-  function isDestructuredAssertionAssignment (objectPattern) {
-    if (objectPattern.properties.length !== 1) {
-      return false;
-    }
-    const { key, value } = objectPattern.properties[0];
-    return isIdentifier(key) && key.name === 'strict' && isAssertionVariableName(value);
+    return isIdentifier(id) && targetVariables.has(id.name);
   }
 
   function isAssertionMethod (callee) {
@@ -117,18 +96,35 @@ function createVisitor (options) {
       isIdentifier(prop) && prop.name === 'assert';
   }
 
-  const isRequireAssert = (id, init) => {
+  function registerIdentifierAsAssertionVariable (id) {
     if (isIdentifier(id)) {
-      if (!isAssertionVariableName(id)) {
-        return false;
-      }
-    } else if (isObjectPattern(id)) {
-      if (!isDestructuredAssertionAssignment(id)) {
-        return false;
-      }
-    } else {
-      return false;
+      targetVariables.add(id.name);
     }
+  }
+
+  function handleDestructuredAssertionAssignment (objectPattern) {
+    for (const { value } of objectPattern.properties) {
+      registerIdentifierAsAssertionVariable(value);
+    }
+  }
+
+  function handleImportSpecifiers (importDeclaration) {
+    for (const { local } of importDeclaration.specifiers) {
+      registerIdentifierAsAssertionVariable(local);
+    }
+  }
+
+  function registerAssertionVariables (node) {
+    if (isIdentifier(node)) {
+      registerIdentifierAsAssertionVariable(node);
+    } else if (isObjectPattern(node)) {
+      handleDestructuredAssertionAssignment(node);
+    } else if (isImportDeclaration(node)) {
+      handleImportSpecifiers(node);
+    }
+  }
+
+  const isRequireAssert = (id, init) => {
     if (!isCallExpression(init)) {
       return false;
     }
@@ -137,7 +133,10 @@ function createVisitor (options) {
       return false;
     }
     const arg = init.arguments[0];
-    return (isLiteral(arg) && isAssertionModuleName(arg));
+    if (!isLiteral(arg) || !isAssertionModuleName(arg)) {
+      return false;
+    }
+    return isIdentifier(id) || isObjectPattern(id);
   };
 
   const isRequireAssertStrict = (id, init) => {
@@ -156,7 +155,7 @@ function createVisitor (options) {
 
   const isRemovalTarget = (id, init) => isRequireAssert(id, init) || isRequireAssertStrict(id, init);
 
-  const pathToRemove = {};
+  const nodeToRemove = new WeakSet();
 
   return {
     enter: function (currentNode, parentNode) {
@@ -166,31 +165,26 @@ function createVisitor (options) {
           if (!(isAssertionModuleName(source))) {
             return;
           }
-          const firstSpecifier = currentNode.specifiers[0];
-          if (!(isImportDefaultSpecifier(firstSpecifier) || isImportNamespaceSpecifier(firstSpecifier) || isImportSpecifier(firstSpecifier))) {
-            return;
-          }
-          const local = firstSpecifier.local;
-          if (isAssertionVariableName(local)) {
-            const espathToRemove = this.path().join('/');
-            pathToRemove[espathToRemove] = true;
-            this.skip();
-          }
+          // remove current ImportDeclaration
+          nodeToRemove.add(currentNode);
+          this.skip();
+          // register local identifier(s) as assertion variable
+          registerAssertionVariables(currentNode);
           break;
         }
         case syntax.VariableDeclarator: {
           if (isRemovalTarget(currentNode.id, currentNode.init)) {
-            let espathToRemove;
             if (parentNode.declarations.length === 1) {
               // remove parent VariableDeclaration
-              // body/1/declarations/0 -> body/1
-              espathToRemove = this.path().slice(0, -2).join('/');
+              nodeToRemove.add(parentNode);
             } else {
               // single var pattern
-              espathToRemove = this.path().join('/');
+              // remove current VariableDeclarator
+              nodeToRemove.add(currentNode);
             }
-            pathToRemove[espathToRemove] = true;
             this.skip();
+            // register local identifier(s) as assertion variable
+            registerAssertionVariables(currentNode.id);
           }
           break;
         }
@@ -203,9 +197,10 @@ function createVisitor (options) {
           }
           if (isRemovalTarget(currentNode.left, currentNode.right)) {
             // remove parent ExpressionStatement
-            const espathToRemove = this.path().slice(0, -1).join('/');
-            pathToRemove[espathToRemove] = true;
+            nodeToRemove.add(parentNode);
             this.skip();
+            // register local identifier(s) as assertion variable
+            registerAssertionVariables(currentNode.left);
           }
           break;
         }
@@ -216,9 +211,7 @@ function createVisitor (options) {
           const callee = currentNode.callee;
           if (isAssertionFunction(callee) || isAssertionMethod(callee) || isConsoleAssert(callee)) {
             // remove parent ExpressionStatement
-            // body/1/body/body/0/expression -> body/1/body/body/0
-            const espathToRemove = this.path().slice(0, -1).join('/');
-            pathToRemove[espathToRemove] = true;
+            nodeToRemove.add(parentNode);
             this.skip();
           }
           break;
@@ -226,8 +219,17 @@ function createVisitor (options) {
       }
     },
     leave: function (currentNode, parentNode) {
-      const path = this.path();
-      if (path && pathToRemove[path.join('/')]) {
+      switch (currentNode.type) {
+        case syntax.ImportDeclaration:
+        case syntax.VariableDeclarator:
+        case syntax.VariableDeclaration:
+        case syntax.ExpressionStatement:
+          break;
+        default:
+          return undefined;
+      }
+      if (nodeToRemove.has(currentNode)) {
+        const path = this.path();
         const key = path[path.length - 1];
         if (isNonBlockChildOfIfStatementOrLoop(currentNode, parentNode, key)) {
           return {

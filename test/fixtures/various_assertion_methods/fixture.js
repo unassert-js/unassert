@@ -1,5 +1,7 @@
 'use strict';
 
+const assert = require('node:assert');
+
 function add (a, b) {
     console.assert(typeof a === 'number');
 
