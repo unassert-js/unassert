@@ -227,6 +227,15 @@ function createVisitor (options) {
       }
     },
     leave: function (currentNode, parentNode) {
+      switch (currentNode.type) {
+        case syntax.ImportDeclaration:
+        case syntax.VariableDeclarator:
+        case syntax.VariableDeclaration:
+        case syntax.ExpressionStatement:
+          break;
+        default:
+          return undefined;
+      }
       const path = this.path();
       if (path && pathToRemove.has(path.join('/'))) {
         const key = path[path.length - 1];
