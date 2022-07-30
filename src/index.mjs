@@ -167,7 +167,7 @@ function createVisitor (options) {
           if (!(isAssertionModuleName(source))) {
             return;
           }
-          // remove ImportDeclaration
+          // remove current ImportDeclaration
           const espathToRemove = this.path().join('/');
           pathToRemove.add(espathToRemove);
           this.skip();
@@ -184,6 +184,7 @@ function createVisitor (options) {
               espathToRemove = this.path().slice(0, -2).join('/');
             } else {
               // single var pattern
+              // remove current VariableDeclarator
               espathToRemove = this.path().join('/');
             }
             pathToRemove.add(espathToRemove);
