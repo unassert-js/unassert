@@ -157,7 +157,7 @@ function createVisitor (options) {
 
   const isRemovalTarget = (id, init) => isRequireAssert(id, init) || isRequireAssertStrict(id, init);
 
-  const pathToRemove = new Set();
+  const nodeToRemove = new WeakSet();
 
   return {
     enter: function (currentNode, parentNode) {
@@ -168,8 +168,7 @@ function createVisitor (options) {
             return;
           }
           // remove current ImportDeclaration
-          const espathToRemove = this.path().join('/');
-          pathToRemove.add(espathToRemove);
+          nodeToRemove.add(currentNode);
           this.skip();
           // register local identifier(s) as assertion variable
           registerAssertionVariables(currentNode);
@@ -177,17 +176,14 @@ function createVisitor (options) {
         }
         case syntax.VariableDeclarator: {
           if (isRemovalTarget(currentNode.id, currentNode.init)) {
-            let espathToRemove;
             if (parentNode.declarations.length === 1) {
               // remove parent VariableDeclaration
-              // body/1/declarations/0 -> body/1
-              espathToRemove = this.path().slice(0, -2).join('/');
+              nodeToRemove.add(parentNode);
             } else {
               // single var pattern
               // remove current VariableDeclarator
-              espathToRemove = this.path().join('/');
+              nodeToRemove.add(currentNode);
             }
-            pathToRemove.add(espathToRemove);
             this.skip();
             // register local identifier(s) as assertion variable
             registerAssertionVariables(currentNode.id);
@@ -203,8 +199,7 @@ function createVisitor (options) {
           }
           if (isRemovalTarget(currentNode.left, currentNode.right)) {
             // remove parent ExpressionStatement
-            const espathToRemove = this.path().slice(0, -1).join('/');
-            pathToRemove.add(espathToRemove);
+            nodeToRemove.add(parentNode);
             this.skip();
             // register local identifier(s) as assertion variable
             registerAssertionVariables(currentNode.left);
@@ -218,9 +213,7 @@ function createVisitor (options) {
           const callee = currentNode.callee;
           if (isAssertionFunction(callee) || isAssertionMethod(callee) || isConsoleAssert(callee)) {
             // remove parent ExpressionStatement
-            // body/1/body/body/0/expression -> body/1/body/body/0
-            const espathToRemove = this.path().slice(0, -1).join('/');
-            pathToRemove.add(espathToRemove);
+            nodeToRemove.add(parentNode);
             this.skip();
           }
           break;
@@ -237,8 +230,8 @@ function createVisitor (options) {
         default:
           return undefined;
       }
-      const path = this.path();
-      if (path && pathToRemove.has(path.join('/'))) {
+      if (nodeToRemove.has(currentNode)) {
+        const path = this.path();
         const key = path[path.length - 1];
         if (isNonBlockChildOfIfStatementOrLoop(currentNode, parentNode, key)) {
           return {
