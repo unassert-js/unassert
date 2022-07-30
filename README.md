@@ -113,21 +113,55 @@ Remove assertion calls from `ast` ([ECMAScript AST](https://github.com/estree/es
 
 Object for configuration options. passed `options` is `Object.assign`ed with default options. If not passed, default options will be used.
 
+##### options.modules
 
-##### options.variables
+Target module names for `require` and `import` call removal.
 
-Target variable names for assertion call removal.
-
-For example,
+For example, the default target modules are as follows.
 
 ```javascript
 {
-  variables: [
-    'assert'
-  ],
+  modules: [
+    'assert',
+    'assert/strict',
+    'node:assert',
+    'node:assert/strict'
+  ]
 ```
 
-will remove assertion calls such as,
+In this case, unassert will remove assert variable declarations such as,
+
+* `import assert from "assert"`
+* `import assert from "assert/strict"`
+* `import assert from "node:assert"`
+* `import assert from "node:assert/strict"`
+* `import * as assert from "assert"`
+* `import * as assert from "node:assert"`
+* `import * as assert from "assert/strict"`
+* `import * as assert from "node:assert/strict"`
+* `import { strict as assert } from "assert"`
+* `import { strict as assert } from "node:assert"`
+* `import { default as assert } from "assert"`
+* `import { default as assert } from "node:assert"`
+* `const assert = require("assert")`
+* `const assert = require("node:assert")`
+* `const assert = require("assert/strict")`
+* `const assert = require("node:assert/strict")`
+* `const assert = require("assert").strict`
+* `const assert = require("node:assert").strict`
+* `const { strict: assert } = require("assert")`
+* `const { strict: assert } = require("node:assert")`
+
+and assignments.
+
+* `assert = require("assert")`
+* `assert = require("node:assert")`
+* `assert = require("assert/strict")`
+* `assert = require("node:assert/strict")`
+* `assert = require("assert").strict`
+* `assert = require("node:assert").strict`
+
+In this default case, unassert will remove assertion calls such as,
 
 * `assert(value, [message])`
 * `assert.ok(value, [message])`
@@ -152,51 +186,15 @@ in addition, unassert removes `console.assert` calls as well.
 * `console.assert(value, [message])`
 
 
-##### options.modules
+#### auto variable tracking
 
-Target module names for `require` and `import` call removal.
+unassert automatically removes assertion calls based on their imported variable names.
 
-For example,
+So if import declaration is as follows,
 
-```javascript
-{
-  modules: [
-    'assert',
-    'assert/strict',
-    'node:assert',
-    'node:assert/strict'
-  ]
-```
+* `import strictAssert, { ok, equal as eq } from 'node:assert/strict';`
 
-will remove assert variable declarations such as,
-
-* `const assert = require("assert")`
-* `const assert = require("node:assert")`
-* `const assert = require("assert/strict")`
-* `const assert = require("node:assert/strict")`
-* `const assert = require("assert").strict`
-* `const assert = require("node:assert").strict`
-* `const { strict: assert } = require("assert")`
-* `const { strict: assert } = require("node:assert")`
-* `import assert from "assert"`
-* `import assert from "assert/strict"`
-* `import assert from "node:assert"`
-* `import assert from "node:assert/strict"`
-* `import * as assert from "assert"`
-* `import * as assert from "node:assert"`
-* `import * as assert from "assert/strict"`
-* `import * as assert from "node:assert/strict"`
-* `import { strict as assert } from "assert"`
-* `import { strict as assert } from "node:assert"`
-
-and assignments.
-
-* `assert = require("assert")`
-* `assert = require("node:assert")`
-* `assert = require("assert/strict")`
-* `assert = require("node:assert/strict")`
-* `assert = require("assert").strict`
-* `assert = require("node:assert").strict`
+unassert removes all `strictAssert`, `ok`, `eq` calls.
 
 
 ### const visitor = createVisitor(options)
@@ -214,8 +212,6 @@ Returns default options object for `unassertAst` and `createVisitor` function. I
 
 ```javascript
 {
-  variables: [
-  ],
   modules: [
     'assert',
     'assert/strict',
@@ -228,7 +224,7 @@ Returns default options object for `unassertAst` and `createVisitor` function. I
 CUSTOMIZATION
 ---------------------------------------
 
-You can customize options such as assertion variable names and module names.
+You can customize options such as target module names.
 
 options:
 

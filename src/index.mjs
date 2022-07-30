@@ -13,8 +13,6 @@ import { ast as esutilsAst } from 'esutils';
 
 function defaultOptions () {
   return {
-    variables: [
-    ],
     modules: [
       'assert',
       'assert/strict',
