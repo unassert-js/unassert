@@ -15,8 +15,7 @@
     }
   ],
   "dependencies": {
-    "estraverse": "^5.0.0",
-    "esutils": "^2.0.2"
+    "estraverse": "^5.0.0"
   },
   "devDependencies": {
     "acorn": "^8.0.0",

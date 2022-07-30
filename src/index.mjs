@@ -9,7 +9,6 @@
  *   https://github.com/unassert-js/unassert/blob/master/LICENSE
  */
 import { replace, Syntax as syntax } from 'estraverse';
-import { ast as esutilsAst } from 'esutils';
 
 function defaultOptions () {
   return {
@@ -26,8 +25,21 @@ function isBodyOfIfStatement (parentNode, key) {
   return parentNode.type === syntax.IfStatement && (key === 'consequent' || key === 'alternate');
 }
 
+function isIterationStatement (node) {
+  if (!node) return false;
+  switch (node.type) {
+    case syntax.DoWhileStatement:
+    case syntax.ForInStatement:
+    case syntax.ForOfStatement:
+    case syntax.ForStatement:
+    case syntax.WhileStatement:
+      return true;
+  }
+  return false;
+}
+
 function isBodyOfIterationStatement (parentNode, key) {
-  return esutilsAst.isIterationStatement(parentNode) && key === 'body';
+  return isIterationStatement(parentNode) && key === 'body';
 }
 
 function isNonBlockChildOfIfStatementOrLoop (currentNode, parentNode, key) {

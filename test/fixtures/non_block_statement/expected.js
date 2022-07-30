@@ -8,5 +8,10 @@ function add(a, b) {
     } else if (typeof b === 'number') {
     } else {
     }
+    for (const i of [
+            a,
+            b
+        ]) {
+    }
     return a + b;
 }
