@@ -2,7 +2,7 @@
 
 const assert = require('node:assert');
 
-function add (a, b) {
+async function add (a, b) {
     console.assert(typeof a === 'number');
 
     assert(!isNaN(a));
@@ -54,5 +54,9 @@ function add (a, b) {
 
     assert.ifError(a);
     assert.fail(a, b, 'assertion message', '==');
+
+    await assert.rejects(prms);
+    await assert.doesNotReject(prms2);
+
     return a + b;
 }
