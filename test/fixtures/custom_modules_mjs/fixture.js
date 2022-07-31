@@ -5,7 +5,7 @@ import { strict as powerAssert } from 'power-assert';
 import { default as looseAssert } from 'node:assert';
 import strictAssert, { ok, equal as eq } from 'node:assert/strict';
 
-function add (a, b) {
+async function add (a, b) {
     strictAssert(!isNaN(a));
     looseAssert(typeof a === 'number');
     eq(typeof b, 'number');
@@ -20,6 +20,9 @@ function add (a, b) {
 
     invariant(someTruthyVal, 'This will not throw');
     invariant(someFalseyVal, 'This will throw an error with this message');
+
+    await looseAssert.rejects(prms);
+    await strictAssert.doesNotReject(prms2);
 
     return a + b;
 }
