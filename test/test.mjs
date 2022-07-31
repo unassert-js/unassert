@@ -25,7 +25,7 @@ function testWithGeneratedFixture (ext, code) {
   const expected = readFileSync(expectedFilepath).toString();
 
   function deftest (name, fun) {
-    it(`${name}: ${code}`, () => {
+    it(`${code} : ${name}`, () => {
       const ast = createFixture({ code, postlude, prelude });
       const modifiedAst = fun(ast);
       const actual = generate(modifiedAst);
@@ -50,7 +50,7 @@ function testWithFixture (fixtureName, options) {
   const expected = readFileSync(expectedFilepath).toString();
 
   function deftest (name, fun) {
-    it(`${name}: ${fixtureName}`, () => {
+    it(`${fixtureName} : ${name}`, () => {
       const ast = parseFixture(fixtureFilepath);
       const modifiedAst = fun(ast);
       const actual = generate(modifiedAst);
