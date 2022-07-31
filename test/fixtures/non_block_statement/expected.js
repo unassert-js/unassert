@@ -8,6 +8,8 @@ function add(a, b) {
     } else if (typeof b === 'number') {
     } else {
     }
+    ensure: {
+    }
     for (const i of [
             a,
             b

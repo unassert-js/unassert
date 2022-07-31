@@ -22,16 +22,18 @@ function defaultOptions () {
 }
 
 function isBodyOfIfStatement (parentNode, key) {
-  return parentNode.type === syntax.IfStatement && (key === 'consequent' || key === 'alternate');
+  return isIfStatement(parentNode) && (key === 'consequent' || key === 'alternate');
 }
 
-function isIterationStatement (node) {
+function isNodeHavingNonBlockStatementAsBody (node) {
   if (!node) return false;
   switch (node.type) {
     case syntax.DoWhileStatement:
     case syntax.ForInStatement:
     case syntax.ForOfStatement:
     case syntax.ForStatement:
+    case syntax.LabeledStatement:
+    case syntax.WithStatement:
     case syntax.WhileStatement:
       return true;
   }
@@ -39,12 +41,11 @@ function isIterationStatement (node) {
 }
 
 function isBodyOfIterationStatement (parentNode, key) {
-  return isIterationStatement(parentNode) && key === 'body';
+  return isNodeHavingNonBlockStatementAsBody(parentNode) && key === 'body';
 }
 
-function isNonBlockChildOfIfStatementOrLoop (currentNode, parentNode, key) {
-  return currentNode.type === syntax.ExpressionStatement &&
-        currentNode.expression.type === syntax.CallExpression &&
+function isNonBlockChildOfParentNode (currentNode, parentNode, key) {
+  return isExpressionStatement(currentNode) && isCallExpression(currentNode.expression) &&
         (isBodyOfIfStatement(parentNode, key) || isBodyOfIterationStatement(parentNode, key));
 }
 
@@ -65,6 +66,9 @@ function isCallExpression (node) {
 }
 function isExpressionStatement (node) {
   return node && node.type === syntax.ExpressionStatement;
+}
+function isIfStatement (node) {
+  return node && node.type === syntax.IfStatement;
 }
 function isImportDeclaration (node) {
   return node && node.type === syntax.ImportDeclaration;
@@ -255,7 +259,7 @@ function createVisitor (options) {
       if (nodeToRemove.has(currentNode)) {
         const path = this.path();
         const key = path[path.length - 1];
-        if (isNonBlockChildOfIfStatementOrLoop(currentNode, parentNode, key)) {
+        if (isNonBlockChildOfParentNode(currentNode, parentNode, key)) {
           return {
             type: syntax.BlockStatement,
             body: []
