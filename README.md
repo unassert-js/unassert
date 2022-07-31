@@ -115,7 +115,7 @@ Object for configuration options. passed `options` is `Object.assign`ed with def
 
 ##### options.modules
 
-Target module names for `require` and `import` call removal.
+Target module names for assertion call removal.
 
 For example, the default target modules are as follows.
 
@@ -173,12 +173,14 @@ In this default case, unassert will remove assertion calls such as,
 * `assert.notDeepEqual(actual, expected, [message])`
 * `assert.deepStrictEqual(actual, expected, [message])`
 * `assert.notDeepStrictEqual(actual, expected, [message])`
-* `assert.fail([message])`
-* `assert.fail(actual, expected, message, operator)`
+* `assert.match(string, regexp[, message])`
+* `assert.doesNotMatch(string, regexp[, message])`
 * `assert.throws(block, [error], [message])`
 * `assert.doesNotThrow(block, [message])`
-* `assert.rejects(asyncFn, [error], [message])`
-* `assert.doesNotReject(asyncFn, [error], [message])`
+* `await assert.rejects(asyncFn, [error], [message])`
+* `await assert.doesNotReject(asyncFn, [error], [message])`
+* `assert.fail([message])`
+* `assert.fail(actual, expected, message, operator)`
 * `assert.ifError(value)`
 
 in addition, unassert removes `console.assert` calls as well.
@@ -251,7 +253,7 @@ import { strict as powerAssert } from 'power-assert';
 import { default as looseAssert } from 'node:assert';
 import strictAssert, { ok, equal as eq } from 'node:assert/strict';
 
-function add (a, b) {
+async function add (a, b) {
   strictAssert(!isNaN(a));
   looseAssert(typeof a === 'number');
   eq(typeof b, 'number');
@@ -267,6 +269,9 @@ function add (a, b) {
   invariant(someTruthyVal, 'This will not throw');
   invariant(someFalseyVal, 'This will throw an error with this message');
 
+  await strictAssert.rejects(prms);
+  await strictAssert.doesNotReject(prms2);
+
   return a + b;
 }
 ```
@@ -274,7 +279,7 @@ function add (a, b) {
 output:
 
 ```javascript
-function add(a, b) {
+async function add(a, b) {
   return a + b;
 }
 ```
