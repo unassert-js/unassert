@@ -159,7 +159,9 @@ function createVisitor (options) {
     return prop.name === 'strict';
   }
 
-  const isRemovalTarget = (id, init) => isRequireAssert(id, init) || isRequireAssertDotStrict(id, init);
+  function isRequireRemovalTarget (id, init) {
+    return isRequireAssert(id, init) || isRequireAssertDotStrict(id, init);
+  }
 
   const nodeToRemove = new WeakSet();
 
@@ -179,7 +181,7 @@ function createVisitor (options) {
           break;
         }
         case syntax.VariableDeclarator: {
-          if (isRemovalTarget(currentNode.id, currentNode.init)) {
+          if (isRequireRemovalTarget(currentNode.id, currentNode.init)) {
             if (parentNode.declarations.length === 1) {
               // remove parent VariableDeclaration
               nodeToRemove.add(parentNode);
@@ -201,7 +203,7 @@ function createVisitor (options) {
           if (!isExpressionStatement(parentNode)) {
             return;
           }
-          if (isRemovalTarget(currentNode.left, currentNode.right)) {
+          if (isRequireRemovalTarget(currentNode.left, currentNode.right)) {
             // remove parent ExpressionStatement
             nodeToRemove.add(parentNode);
             this.skip();
