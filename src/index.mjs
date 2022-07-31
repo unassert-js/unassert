@@ -130,7 +130,7 @@ function createVisitor (options) {
     }
   }
 
-  const isRequireAssert = (id, init) => {
+  function isRequireAssert (id, init) {
     if (!isCallExpression(init)) {
       return false;
     }
@@ -143,9 +143,9 @@ function createVisitor (options) {
       return false;
     }
     return isIdentifier(id) || isObjectPattern(id);
-  };
+  }
 
-  const isRequireAssertStrict = (id, init) => {
+  function isRequireAssertDotStrict (id, init) {
     if (!isMemberExpression(init)) {
       return false;
     }
@@ -157,9 +157,9 @@ function createVisitor (options) {
       return false;
     }
     return prop.name === 'strict';
-  };
+  }
 
-  const isRemovalTarget = (id, init) => isRequireAssert(id, init) || isRequireAssertStrict(id, init);
+  const isRemovalTarget = (id, init) => isRequireAssert(id, init) || isRequireAssertDotStrict(id, init);
 
   const nodeToRemove = new WeakSet();
 

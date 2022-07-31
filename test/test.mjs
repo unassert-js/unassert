@@ -25,7 +25,7 @@ function testWithGeneratedFixture (ext, code) {
   const expected = readFileSync(expectedFilepath).toString();
 
   function deftest (name, fun) {
-    it(`${name}: ${code}`, function () {
+    it(`${name}: ${code}`, () => {
       const ast = createFixture({ code, postlude, prelude });
       const modifiedAst = fun(ast);
       const actual = generate(modifiedAst);
@@ -50,7 +50,7 @@ function testWithFixture (fixtureName, options) {
   const expected = readFileSync(expectedFilepath).toString();
 
   function deftest (name, fun) {
-    it(`${name}: ${fixtureName}`, function () {
+    it(`${name}: ${fixtureName}`, () => {
       const ast = parseFixture(fixtureFilepath);
       const modifiedAst = fun(ast);
       const actual = generate(modifiedAst);
@@ -68,7 +68,7 @@ describe('with default options', () => {
   testWithFixture('assignment_singlevar');
   testWithFixture('non_block_statement');
 
-  describe('removal of ESM imports', function () {
+  describe('removal of ESM imports', () => {
     testESM("import assert from 'assert';");
     testESM("import assert from 'node:assert';");
     testESM("import assert from 'node:assert/strict';");
@@ -83,7 +83,7 @@ describe('with default options', () => {
     testESM("import { default as assert } from 'node:assert';");
   });
 
-  describe('removal of CJS requires', function () {
+  describe('removal of CJS requires', () => {
     testCJS("const assert = require('assert');");
     testCJS("const assert = require('assert').strict;");
     testCJS("const assert = require('assert/strict');");
@@ -97,8 +97,6 @@ describe('with default options', () => {
 
 describe('with custom options', () => {
   testWithFixture('custom_modules_cjs', {
-    variables: [
-    ],
     modules: [
       'http-assert',
       'node:assert'
@@ -106,8 +104,6 @@ describe('with custom options', () => {
   });
 
   testWithFixture('custom_modules_mjs', {
-    variables: [
-    ],
     modules: [
       'node:assert',
       'node:assert/strict',
