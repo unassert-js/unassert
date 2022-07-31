@@ -228,6 +228,18 @@ function createVisitor (options) {
           }
           break;
         }
+        case syntax.AwaitExpression: {
+          const childNode = currentNode.argument;
+          if (isExpressionStatement(parentNode) && isCallExpression(childNode)) {
+            const callee = childNode.callee;
+            if (isAssertionFunction(callee) || isAssertionMethod(callee) || isConsoleAssert(callee)) {
+              // remove parent ExpressionStatement
+              nodeToRemove.add(parentNode);
+              this.skip();
+            }
+          }
+          break;
+        }
       }
     },
     leave: function (currentNode, parentNode) {

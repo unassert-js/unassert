@@ -1,4 +1,4 @@
 'use strict';
-function add(a, b) {
+async function add(a, b) {
     return a + b;
 }
