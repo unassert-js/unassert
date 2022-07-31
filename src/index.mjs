@@ -10,45 +10,6 @@
  */
 import { replace, Syntax as syntax } from 'estraverse';
 
-function defaultOptions () {
-  return {
-    modules: [
-      'assert',
-      'assert/strict',
-      'node:assert',
-      'node:assert/strict'
-    ]
-  };
-}
-
-function isBodyOfIfStatement (parentNode, key) {
-  return isIfStatement(parentNode) && (key === 'consequent' || key === 'alternate');
-}
-
-function isNodeHavingNonBlockStatementAsBody (node) {
-  if (!node) return false;
-  switch (node.type) {
-    case syntax.DoWhileStatement:
-    case syntax.ForInStatement:
-    case syntax.ForOfStatement:
-    case syntax.ForStatement:
-    case syntax.LabeledStatement:
-    case syntax.WithStatement:
-    case syntax.WhileStatement:
-      return true;
-  }
-  return false;
-}
-
-function isBodyOfIterationStatement (parentNode, key) {
-  return isNodeHavingNonBlockStatementAsBody(parentNode) && key === 'body';
-}
-
-function isNonBlockChildOfParentNode (currentNode, parentNode, key) {
-  return isExpressionStatement(currentNode) && isCallExpression(currentNode.expression) &&
-        (isBodyOfIfStatement(parentNode, key) || isBodyOfIterationStatement(parentNode, key));
-}
-
 function isLiteral (node) {
   return node && node.type === syntax.Literal;
 }
@@ -72,6 +33,35 @@ function isIfStatement (node) {
 }
 function isImportDeclaration (node) {
   return node && node.type === syntax.ImportDeclaration;
+}
+
+function isBodyOfNodeHavingNonBlockStatementAsBody (node, key) {
+  if (!node) {
+    return false;
+  }
+  if (key !== 'body') {
+    return false;
+  }
+  switch (node.type) {
+    case syntax.DoWhileStatement:
+    case syntax.ForInStatement:
+    case syntax.ForOfStatement:
+    case syntax.ForStatement:
+    case syntax.LabeledStatement:
+    case syntax.WithStatement:
+    case syntax.WhileStatement:
+      return true;
+  }
+  return false;
+}
+
+function isBodyOfIfStatement (node, key) {
+  return isIfStatement(node) && (key === 'consequent' || key === 'alternate');
+}
+
+function isNonBlockChildOfParentNode (currentNode, parentNode, key) {
+  return isExpressionStatement(currentNode) && isCallExpression(currentNode.expression) &&
+        (isBodyOfIfStatement(parentNode, key) || isBodyOfNodeHavingNonBlockStatementAsBody(parentNode, key));
 }
 
 function createVisitor (options) {
@@ -275,6 +265,17 @@ function createVisitor (options) {
 
 function unassertAst (ast, options) {
   return replace(ast, createVisitor(options));
+}
+
+function defaultOptions () {
+  return {
+    modules: [
+      'assert',
+      'assert/strict',
+      'node:assert',
+      'node:assert/strict'
+    ]
+  };
 }
 
 export {
