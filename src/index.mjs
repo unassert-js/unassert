@@ -159,8 +159,12 @@ function createVisitor (options) {
     return prop.name === 'strict';
   }
 
-  function isRequireRemovalTarget (id, init) {
+  function isRemovalTargetRequire (id, init) {
     return isRequireAssert(id, init) || isRequireAssertDotStrict(id, init);
+  }
+
+  function isRemovalTargetAssertion (callee) {
+    return isAssertionFunction(callee) || isAssertionMethod(callee) || isConsoleAssert(callee);
   }
 
   const nodeToRemove = new WeakSet();
@@ -181,7 +185,7 @@ function createVisitor (options) {
           break;
         }
         case syntax.VariableDeclarator: {
-          if (isRequireRemovalTarget(currentNode.id, currentNode.init)) {
+          if (isRemovalTargetRequire(currentNode.id, currentNode.init)) {
             if (parentNode.declarations.length === 1) {
               // remove parent VariableDeclaration
               nodeToRemove.add(parentNode);
@@ -203,7 +207,7 @@ function createVisitor (options) {
           if (!isExpressionStatement(parentNode)) {
             return;
           }
-          if (isRequireRemovalTarget(currentNode.left, currentNode.right)) {
+          if (isRemovalTargetRequire(currentNode.left, currentNode.right)) {
             // remove parent ExpressionStatement
             nodeToRemove.add(parentNode);
             this.skip();
@@ -217,7 +221,7 @@ function createVisitor (options) {
             return;
           }
           const callee = currentNode.callee;
-          if (isAssertionFunction(callee) || isAssertionMethod(callee) || isConsoleAssert(callee)) {
+          if (isRemovalTargetAssertion(callee)) {
             // remove parent ExpressionStatement
             nodeToRemove.add(parentNode);
             this.skip();
@@ -228,7 +232,7 @@ function createVisitor (options) {
           const childNode = currentNode.argument;
           if (isExpressionStatement(parentNode) && isCallExpression(childNode)) {
             const callee = childNode.callee;
-            if (isAssertionFunction(callee) || isAssertionMethod(callee) || isConsoleAssert(callee)) {
+            if (isRemovalTargetAssertion(callee)) {
               // remove parent ExpressionStatement
               nodeToRemove.add(parentNode);
               this.skip();
@@ -249,16 +253,17 @@ function createVisitor (options) {
           return undefined;
       }
       if (nodeToRemove.has(currentNode)) {
-        const path = this.path();
-        const key = path[path.length - 1];
-        if (isNonBlockChildOfParentNode(currentNode, parentNode, key)) {
-          return {
-            type: syntax.BlockStatement,
-            body: []
-          };
-        } else {
-          this.remove();
+        if (isExpressionStatement(currentNode)) {
+          const path = this.path();
+          const key = path[path.length - 1];
+          if (isNonBlockChildOfParentNode(currentNode, parentNode, key)) {
+            return {
+              type: syntax.BlockStatement,
+              body: []
+            };
+          }
         }
+        this.remove();
       }
       return undefined;
     }
