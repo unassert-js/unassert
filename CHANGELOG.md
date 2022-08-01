@@ -9,7 +9,11 @@
 * Restructured codebase
   * [Migrate codebase to ESM and provide CJS/ESM dual package](https://github.com/unassert-js/unassert/pull/29)
   * [Replace default exported `unassert` with named exported `unassertAst`](https://github.com/unassert-js/unassert/pull/27)
+
+* Performance improvement
   * [Replace AST matcher with simpler and robust logic](https://github.com/unassert-js/unassert/pull/25)
+  * [Add Benchmark Suite to run benchmark continuously](https://github.com/unassert-js/unassert/pull/39)
+  * v2.0.0 is 20 times faster than v1.6.0
 
 * Newly supported syntaxes and features
   * [Support strict assertion mode newly exposed as 'node:assert/strict'](https://github.com/unassert-js/unassert/pull/31)
