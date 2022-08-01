@@ -8,31 +8,31 @@
  * Licensed under the MIT license.
  *   https://github.com/unassert-js/unassert/blob/master/LICENSE
  */
-import { replace, Syntax as syntax } from 'estraverse';
+import { replace } from 'estraverse';
 
 function isLiteral (node) {
-  return node && node.type === syntax.Literal;
+  return node && node.type === 'Literal';
 }
 function isIdentifier (node) {
-  return node && node.type === syntax.Identifier;
+  return node && node.type === 'Identifier';
 }
 function isObjectPattern (node) {
-  return node && node.type === syntax.ObjectPattern;
+  return node && node.type === 'ObjectPattern';
 }
 function isMemberExpression (node) {
-  return node && node.type === syntax.MemberExpression;
+  return node && node.type === 'MemberExpression';
 }
 function isCallExpression (node) {
-  return node && node.type === syntax.CallExpression;
+  return node && node.type === 'CallExpression';
 }
 function isExpressionStatement (node) {
-  return node && node.type === syntax.ExpressionStatement;
+  return node && node.type === 'ExpressionStatement';
 }
 function isIfStatement (node) {
-  return node && node.type === syntax.IfStatement;
+  return node && node.type === 'IfStatement';
 }
 function isImportDeclaration (node) {
-  return node && node.type === syntax.ImportDeclaration;
+  return node && node.type === 'ImportDeclaration';
 }
 
 function isBodyOfNodeHavingNonBlockStatementAsBody (node, key) {
@@ -43,13 +43,13 @@ function isBodyOfNodeHavingNonBlockStatementAsBody (node, key) {
     return false;
   }
   switch (node.type) {
-    case syntax.DoWhileStatement:
-    case syntax.ForInStatement:
-    case syntax.ForOfStatement:
-    case syntax.ForStatement:
-    case syntax.LabeledStatement:
-    case syntax.WithStatement:
-    case syntax.WhileStatement:
+    case 'DoWhileStatement':
+    case 'ForInStatement':
+    case 'ForOfStatement':
+    case 'ForStatement':
+    case 'LabeledStatement':
+    case 'WithStatement':
+    case 'WhileStatement':
       return true;
   }
   return false;
@@ -172,7 +172,7 @@ function createVisitor (options) {
   return {
     enter: function (currentNode, parentNode) {
       switch (currentNode.type) {
-        case syntax.ImportDeclaration: {
+        case 'ImportDeclaration': {
           const source = currentNode.source;
           if (!(isAssertionModuleName(source))) {
             return;
@@ -184,7 +184,7 @@ function createVisitor (options) {
           registerAssertionVariables(currentNode);
           break;
         }
-        case syntax.VariableDeclarator: {
+        case 'VariableDeclarator': {
           if (isRemovalTargetRequire(currentNode.id, currentNode.init)) {
             if (parentNode.declarations.length === 1) {
               // remove parent VariableDeclaration
@@ -200,7 +200,7 @@ function createVisitor (options) {
           }
           break;
         }
-        case syntax.AssignmentExpression: {
+        case 'AssignmentExpression': {
           if (currentNode.operator !== '=') {
             return;
           }
@@ -216,7 +216,7 @@ function createVisitor (options) {
           }
           break;
         }
-        case syntax.CallExpression: {
+        case 'CallExpression': {
           if (!isExpressionStatement(parentNode)) {
             return;
           }
@@ -228,7 +228,7 @@ function createVisitor (options) {
           }
           break;
         }
-        case syntax.AwaitExpression: {
+        case 'AwaitExpression': {
           const childNode = currentNode.argument;
           if (isExpressionStatement(parentNode) && isCallExpression(childNode)) {
             const callee = childNode.callee;
@@ -244,10 +244,10 @@ function createVisitor (options) {
     },
     leave: function (currentNode, parentNode) {
       switch (currentNode.type) {
-        case syntax.ImportDeclaration:
-        case syntax.VariableDeclarator:
-        case syntax.VariableDeclaration:
-        case syntax.ExpressionStatement:
+        case 'ImportDeclaration':
+        case 'VariableDeclarator':
+        case 'VariableDeclaration':
+        case 'ExpressionStatement':
           break;
         default:
           return undefined;
@@ -258,7 +258,7 @@ function createVisitor (options) {
           const key = path[path.length - 1];
           if (isNonBlockChildOfParentNode(currentNode, parentNode, key)) {
             return {
-              type: syntax.BlockStatement,
+              type: 'BlockStatement',
               body: []
             };
           }
