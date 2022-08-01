@@ -93,6 +93,8 @@ API
 
 unassert package exports three functions. `unassertAst` is the main function. `createVisitor` and `defaultOptions` are for customization.
 
+### const modifiedAst = unassertAst(ast, options)
+
 ```javascript
 const { unassertAst, createVisitor, defaultOptions } = require('unassert')
 ```
@@ -100,8 +102,6 @@ const { unassertAst, createVisitor, defaultOptions } = require('unassert')
 ```javascript
 import { unassertAst, createVisitor, defaultOptions } from 'unassert'
 ```
-
-### const modifiedAst = unassertAst(ast, options)
 
 | return type                                                   |
 |:--------------------------------------------------------------|
@@ -201,6 +201,14 @@ unassert removes all `strictAssert`, `ok`, `eq` calls.
 
 ### const visitor = createVisitor(options)
 
+```javascript
+const { createVisitor } = require('unassert')
+```
+
+```javascript
+import { createVisitor } from 'unassert'
+```
+
 | return type                                                                       |
 |:----------------------------------------------------------------------------------|
 | `object` (visitor object for [estraverse](https://github.com/estools/estraverse)) |
@@ -209,6 +217,14 @@ Create visitor object to be used with `estraverse.replace`. Visitor can be custo
 
 
 ### const options = defaultOptions()
+
+```javascript
+const { defaultOptions } = require('unassert')
+```
+
+```javascript
+import { defaultOptions } from 'unassert'
+```
 
 Returns default options object for `unassertAst` and `createVisitor` function. In other words, returns
 
@@ -228,8 +244,6 @@ CUSTOMIZATION
 
 You can customize options such as target module names.
 
-options:
-
 ```javascript
 {
   modules: [
@@ -243,7 +257,9 @@ options:
 }
 ```
 
-input:
+### example
+
+For given `custom.js` below,
 
 ```javascript
 import invariant from 'invariant';
@@ -276,7 +292,34 @@ async function add (a, b) {
 }
 ```
 
-output:
+Apply `unassertAst` with customized options then generate modified code to console.
+
+```javascript
+import { unassertAst } from 'unassert';
+import { parse } from 'acorn';
+import { generate } from 'escodegen';
+import { readFileSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const filepath = join(__dirname, 'custom.js');
+const ast = parse(readFileSync(filepath), { ecmaVersion: '2022' });
+const modifiedAst = unassertAst(ast, {
+  modules: [
+    'node:assert',
+    'node:assert/strict',
+    'power-assert',
+    'invariant',
+    'nanoassert',
+    'uvu/assert'
+  ]
+});
+
+console.log(generate(modifiedAst));
+```
+
+Then you will see all assert calls disappear.
 
 ```javascript
 async function add(a, b) {
