@@ -4,8 +4,9 @@
 #### Features
 
 * [Replace default exported `unassert` with named exported `unassertAst`](https://github.com/unassert-js/unassert/pull/27)
-* [Variable Tracking: remove assertion calls based on their imported variable names](https://github.com/unassert-js/unassert/pull/34)
 * [Migrate codebase to ESM and provide CJS/ESM dual package](https://github.com/unassert-js/unassert/pull/29)
+* [Variable Tracking: remove assertion calls based on their imported variable names](https://github.com/unassert-js/unassert/pull/34)
+* [Replace AST matcher with simpler and robust logic](https://github.com/unassert-js/unassert/pull/25)
 * [Support strict assertion mode newly exposed as 'node:assert/strict'](https://github.com/unassert-js/unassert/pull/31)
 * [Support destructured assignment of strict property](https://github.com/unassert-js/unassert/pull/32)
 * [Support safe removal of loop invariants in for-of statement](https://github.com/unassert-js/unassert/pull/35)
