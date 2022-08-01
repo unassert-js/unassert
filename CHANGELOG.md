@@ -1,3 +1,104 @@
+## [2.0.0](https://github.com/unassert-js/unassert/releases/tag/v2.0.0) (2022-08-01)
+
+
+#### Features
+
+* [Replace default exported `unassert` with named exported `unassertAst`](https://github.com/unassert-js/unassert/pull/27)
+* [Variable Tracking: remove assertion calls based on their imported variable names](https://github.com/unassert-js/unassert/pull/34)
+* [Migrate codebase to ESM and provide CJS/ESM dual package](https://github.com/unassert-js/unassert/pull/29)
+* [Support strict assertion mode newly exposed as 'node:assert/strict'](https://github.com/unassert-js/unassert/pull/31)
+* [Support destructured assignment of strict property](https://github.com/unassert-js/unassert/pull/32)
+* [Support safe removal of loop invariants in for-of statement](https://github.com/unassert-js/unassert/pull/35)
+* [Support removal of async assertion such as `assert.rejects`](https://github.com/unassert-js/unassert/pull/36)
+
+
+#### Bug Fixes
+
+* [unassert causes SyntaxError when body of LabeledStatement is single ExpressionStatement](https://github.com/unassert-js/unassert/pull/37)
+
+
+#### Breaking Changes
+
+* [Replace default exported `unassert` with named exported `unassertAst`](https://github.com/unassert-js/unassert/pull/27)
+
+`unassert` function is removed in favor of named exports aiming ESM era. Please use `unassert.unassertAst` instead.
+
+before:
+```js
+const unassert = require('unassert');
+```
+
+after:
+```js
+const { unassertAst } = require('unassert');
+```
+
+
+* [Replace AST matcher with simpler and robust logic](https://github.com/unassert-js/unassert/pull/25)
+
+Configuration options are simplified a lot. Patterns are aggregated into `modules`.
+
+before:
+```js
+{
+  assertionPatterns: [
+    'assert(value, [message])',
+    'assert.ok(value, [message])',
+    'assert.equal(actual, expected, [message])',
+    'assert.notEqual(actual, expected, [message])',
+    'assert.strictEqual(actual, expected, [message])',
+    'assert.notStrictEqual(actual, expected, [message])',
+    'assert.deepEqual(actual, expected, [message])',
+    'assert.notDeepEqual(actual, expected, [message])',
+    'assert.deepStrictEqual(actual, expected, [message])',
+    'assert.notDeepStrictEqual(actual, expected, [message])',
+    'assert.fail(actual, expected, message, operator)',
+    'assert.throws(block, [error], [message])',
+    'assert.doesNotThrow(block, [message])',
+    'assert.ifError(value)',
+    'console.assert(value, [message])'
+  ],
+  requirePatterns: [
+    'assert = require("assert")'
+  ],
+  importPatterns: [
+    'import assert from "assert"',
+    'import * as assert from "assert"'
+  ]
+}
+```
+
+after:
+```js
+{
+  modules: [
+    'assert',
+    'assert/strict',
+    'node:assert',
+    'node:assert/strict'
+  ]
+}
+```
+
+
+* [Drop power-assert support from default patterns since power-assert works transparently](https://github.com/unassert-js/unassert/pull/28)
+
+Move power-assert support away from default patterns since power-assert empowers default assert function transparently, so should not be required explicitly. If power-assert is still required explicitly, add 'power-assert' to `modules` in customized configuration.
+
+after:
+```js
+{
+  modules: [
+    'assert',
+    'assert/strict',
+    'node:assert',
+    'node:assert/strict',
+    'power-assert'
+  ]
+}
+```
+
+
 ## [1.6.0](https://github.com/unassert-js/unassert/releases/tag/v1.6.0) (2019-09-20)
 
 #### Chores
