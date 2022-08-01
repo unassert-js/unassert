@@ -17,7 +17,7 @@ See: "[unassert - encourage reliable programming by writing assertions in produc
 - [webpack-unassert-loader](https://github.com/unassert-js/webpack-unassert-loader): Webpack loader for unassert
 - [gulp-unassert](https://github.com/unassert-js/gulp-unassert): Gulp plugin for unassert
 - [unassert-cli](https://github.com/unassert-js/unassert-cli): CLI for unassert
-- [rollup-plugin-unassert](https://gitlab.com/IvanSanchez/rollup-plugin-unassert): RollupJS plugin for unassert
+- [rollup-plugin-unassert](https://github.com/unassert-js/rollup-plugin-unassert): RollupJS plugin for unassert
 
 
 INSTALL
