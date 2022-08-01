@@ -91,16 +91,17 @@ function add(a, b) {
 API
 ---------------------------------------
 
-unassert package exports three functions. `unassertAst` is the main function. `createVisitor` and `defaultOptions` are for customization.
+unassert package exports three functions. [`unassertAst`](https://github.com/unassert-js/unassert#const-modifiedast--unassertastast-options) is the main function. [`createVisitor`](https://github.com/unassert-js/unassert#const-visitor--createvisitoroptions) and [`defaultOptions`](https://github.com/unassert-js/unassert#const-options--defaultoptions) are for customization.
+
 
 ### const modifiedAst = unassertAst(ast, options)
 
 ```javascript
-const { unassertAst, createVisitor, defaultOptions } = require('unassert')
+const { unassertAst } = require('unassert')
 ```
 
 ```javascript
-import { unassertAst, createVisitor, defaultOptions } from 'unassert'
+import { unassertAst } from 'unassert'
 ```
 
 | return type                                                   |
@@ -188,7 +189,7 @@ in addition, unassert removes `console.assert` calls as well.
 * `console.assert(value, [message])`
 
 
-#### auto variable tracking
+#### Auto Variable Tracking
 
 unassert automatically removes assertion calls based on their imported variable names.
 
@@ -197,6 +198,8 @@ So if import declaration is as follows,
 * `import strictAssert, { ok, equal as eq } from 'node:assert/strict';`
 
 unassert removes all `strictAssert`, `ok`, `eq` calls.
+
+Please see [customization example](https://github.com/unassert-js/unassert#example-1) for more details.
 
 
 ### const visitor = createVisitor(options)
