@@ -91,8 +91,17 @@ function add(a, b) {
 API
 ---------------------------------------
 
-unassert package exports three functions. [`unassertAst`](https://github.com/unassert-js/unassert#const-modifiedast--unassertastast-options) is the main function. [`createVisitor`](https://github.com/unassert-js/unassert#const-visitor--createvisitoroptions) and [`defaultOptions`](https://github.com/unassert-js/unassert#const-options--defaultoptions) are for customization.
+unassert package exports four functions.
 
+Main functions:
+
+* [`unassertAst`](https://github.com/unassert-js/unassert#const-modifiedast--unassertastast-options)
+* [`unassertCode`](https://github.com/unassert-js/unassert#const-unasserted--unassertcodecodeast-options)
+
+For customization:
+
+* [`createVisitor`](https://github.com/unassert-js/unassert#const-visitor--createvisitoroptions)
+* [`defaultOptions`](https://github.com/unassert-js/unassert#const-options--defaultoptions)
 
 ### const modifiedAst = unassertAst(ast, options)
 
@@ -128,6 +137,7 @@ For example, the default target modules are as follows.
     'node:assert',
     'node:assert/strict'
   ]
+}
 ```
 
 In this case, unassert will remove assert variable declarations such as,
@@ -201,6 +211,41 @@ unassert removes all `strictAssert`, `ok`, `eq` calls.
 
 Please see [customization example](https://github.com/unassert-js/unassert#example-1) for more details.
 
+### const unasserted = unassertCode(code, ast, options)
+
+```javascript
+const { unassertCode } = require('unassert')
+```
+
+```javascript
+import { unassertCode } from 'unassert'
+```
+
+| return type                                                   |
+|:--------------------------------------------------------------|
+| `{ code: string; map: SourceMap | null; }`                    |
+
+Remove assertion calls from the code. Default behaviour can be customized by `options`.
+Note that the `ast` is manipulated directly.
+
+#### MagicString
+
+If a [MagicString](https://www.npmjs.com/package/magic-string) is passed instead of a normal string,
+this function will simply modify that string and return it.
+
+#### options
+
+Object for configuration options. passed `options` is `Object.assign`ed with default options. If not passed, default options will be used.
+
+##### options.modules
+
+The same as for [`unassertAst`](#optionsmodules).
+
+##### options.sourceMap
+
+If `true`, a sourcemap of the changes will be generated in addition to the code.
+
+You can alternatively specify [sourcemap options](https://github.com/rich-harris/magic-string#sgeneratemap-options-) if you which to customize how the sourcemap is generated.
 
 ### const visitor = createVisitor(options)
 
@@ -218,6 +263,18 @@ import { createVisitor } from 'unassert'
 
 Create visitor object to be used with `estraverse.replace`. Visitor can be customized by `options`.
 
+#### options
+
+Object for configuration options. passed `options` is `Object.assign`ed with default options. If not passed, default options will be used.
+
+##### options.modules
+
+The same as for [`unassertAst`](#optionsmodules).
+
+##### options.code
+
+A [MagicString](https://www.npmjs.com/package/magic-string) of the code the ast represents.
+If given, this code will be updated with the changes made to the ast.
 
 ### const options = defaultOptions()
 
