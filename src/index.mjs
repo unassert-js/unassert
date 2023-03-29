@@ -1,13 +1,3 @@
-/**
- * unassert
- *   Encourages programming with assertions by providing tools to compile them away.
- *
- * https://github.com/unassert-js/unassert
- *
- * Copyright (c) 2015-2022 Takuto Wada
- * Licensed under the MIT license.
- *   https://github.com/unassert-js/unassert/blob/master/LICENSE
- */
 import { replace, traverse } from 'estraverse';
 import MagicString from 'magic-string';
 
