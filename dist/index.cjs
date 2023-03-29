@@ -1,6 +1,7 @@
 'use strict';
 
 const estraverse = require('estraverse');
+const MagicString = require('magic-string');
 
 /**
  * unassert
@@ -13,31 +14,99 @@ const estraverse = require('estraverse');
  *   https://github.com/unassert-js/unassert/blob/master/LICENSE
  */
 
-function isLiteral (node) {
-  return node && node.type === 'Literal';
-}
-function isIdentifier (node) {
-  return node && node.type === 'Identifier';
-}
-function isObjectPattern (node) {
-  return node && node.type === 'ObjectPattern';
-}
-function isMemberExpression (node) {
-  return node && node.type === 'MemberExpression';
-}
-function isCallExpression (node) {
-  return node && node.type === 'CallExpression';
-}
-function isExpressionStatement (node) {
-  return node && node.type === 'ExpressionStatement';
-}
-function isIfStatement (node) {
-  return node && node.type === 'IfStatement';
-}
-function isImportDeclaration (node) {
-  return node && node.type === 'ImportDeclaration';
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @returns {node is import('acorn').Node}
+ */
+function isAcornNode (node) {
+  return typeof node === 'object' && node !== null && typeof node.start === 'number' && typeof node.end === 'number';
 }
 
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @returns {node is import('estree').Literal}
+ */
+function isLiteral (node) {
+  return node?.type === 'Literal';
+}
+
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @returns {node is import('estree').Identifier}
+ */
+function isIdentifier (node) {
+  return node?.type === 'Identifier';
+}
+
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @returns {node is import('estree').ObjectPattern}
+ */
+function isObjectPattern (node) {
+  return node?.type === 'ObjectPattern';
+}
+
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @returns {node is import('estree').MemberExpression}
+ */
+function isMemberExpression (node) {
+  return node?.type === 'MemberExpression';
+}
+
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @returns {node is import('estree').CallExpression}
+ */
+function isCallExpression (node) {
+  return node?.type === 'CallExpression';
+}
+
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @returns {node is import('estree').ExpressionStatement}
+ */
+function isExpressionStatement (node) {
+  return node?.type === 'ExpressionStatement';
+}
+
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @returns {node is import('estree').IfStatement}
+ */
+function isIfStatement (node) {
+  return node?.type === 'IfStatement';
+}
+
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @returns {node is import('estree').ImportDeclaration}
+ */
+function isImportDeclaration (node) {
+  return node?.type === 'ImportDeclaration';
+}
+
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @returns {node is import('estree').Property}
+ */
+function isProperty (node) {
+  return node?.type === 'Property';
+}
+
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @returns {node is import('estree').VariableDeclarator}
+ */
+function isVariableDeclarator (node) {
+  return node?.type === 'VariableDeclarator';
+}
+
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @param {string | number} key
+ * @returns {boolean}
+ */
 function isBodyOfNodeHavingNonBlockStatementAsBody (node, key) {
   if (!node) {
     return false;
@@ -58,30 +127,67 @@ function isBodyOfNodeHavingNonBlockStatementAsBody (node, key) {
   return false;
 }
 
+/**
+ * @param {import('estree').Node | undefined | null} node
+ * @param {string | number} key
+ * @returns {boolean}
+ */
 function isBodyOfIfStatement (node, key) {
   return isIfStatement(node) && (key === 'consequent' || key === 'alternate');
 }
-
+/**
+ * @param {import('estree').Node} currentNode
+ * @param {import('estree').Node} parentNode
+ * @param {string | number} key
+ * @returns {boolean}
+ */
 function isNonBlockChildOfParentNode (currentNode, parentNode, key) {
   return isExpressionStatement(currentNode) && isCallExpression(currentNode.expression) &&
         (isBodyOfIfStatement(parentNode, key) || isBodyOfNodeHavingNonBlockStatementAsBody(parentNode, key));
 }
 
+/**
+ * @param {import('./index.mjs').CreateVisitorOptions} [options]
+ * @returns {import('estraverse').Visitor}
+ */
 function createVisitor (options) {
   const config = Object.assign(defaultOptions(), options);
   const targetModules = new Set(config.modules);
   const targetVariables = new Set(config.variables);
+  const { code } = config;
 
+  /**
+   * @type {WeakMap<
+   *   import('estree').Node,
+   *   | {
+   *       code: string;
+   *       node: import('estree').Node
+   *     }
+   *   | null
+   * >}
+   */
   const nodeUpdates = new WeakMap();
 
+  /**
+   * @param {import('estree').Node} lit
+   * @returns {boolean}
+   */
   function isAssertionModuleName (lit) {
-    return isLiteral(lit) && targetModules.has(lit.value);
+    return isLiteral(lit) && targetModules.has(/** @type {string} */ (lit.value));
   }
 
+  /**
+   * @param {import('estree').Node} id
+   * @returns {boolean}
+   */
   function isAssertionVariableName (id) {
     return isIdentifier(id) && targetVariables.has(id.name);
   }
 
+  /**
+   * @param {import('estree').Expression | import('estree').Super} callee
+   * @returns {boolean}
+   */
   function isAssertionMethod (callee) {
     if (!isMemberExpression(callee)) {
       return false;
@@ -94,10 +200,18 @@ function createVisitor (options) {
     }
   }
 
+  /**
+   * @param {import('estree').Expression | import('estree').Super} callee
+   * @returns {boolean}
+   */
   function isAssertionFunction (callee) {
     return isAssertionVariableName(callee);
   }
 
+  /**
+   * @param {import('estree').Expression | import('estree').Super} callee
+   * @returns {boolean}
+   */
   function isConsoleAssert (callee) {
     if (!isMemberExpression(callee)) {
       return false;
@@ -107,24 +221,42 @@ function createVisitor (options) {
       isIdentifier(prop) && prop.name === 'assert';
   }
 
+  /**
+   * @param {import('estree').Node} id
+   * @returns {void}
+   */
   function registerIdentifierAsAssertionVariable (id) {
     if (isIdentifier(id)) {
       targetVariables.add(id.name);
     }
   }
 
+  /**
+   * @param {import('estree').ObjectPattern} objectPattern
+   * @returns {void}
+   */
   function handleDestructuredAssertionAssignment (objectPattern) {
-    for (const { value } of objectPattern.properties) {
-      registerIdentifierAsAssertionVariable(value);
+    for (const property of objectPattern.properties) {
+      if (isProperty(property)) {
+        registerIdentifierAsAssertionVariable(property.value);
+      }
     }
   }
 
+  /**
+   * @param {import('estree').ImportDeclaration} importDeclaration
+   * @returns {void}
+   */
   function handleImportSpecifiers (importDeclaration) {
     for (const { local } of importDeclaration.specifiers) {
       registerIdentifierAsAssertionVariable(local);
     }
   }
 
+  /**
+   * @param {import('estree').Node} node
+   * @returns {void}
+   */
   function registerAssertionVariables (node) {
     if (isIdentifier(node)) {
       registerIdentifierAsAssertionVariable(node);
@@ -135,6 +267,11 @@ function createVisitor (options) {
     }
   }
 
+  /**
+   * @param {import('estree').Pattern} id
+   * @param {import('estree').Expression | import('estree').Super | undefined | null} init
+   * @returns {boolean}
+   */
   function isRequireAssert (id, init) {
     if (!isCallExpression(init)) {
       return false;
@@ -150,6 +287,11 @@ function createVisitor (options) {
     return isIdentifier(id) || isObjectPattern(id);
   }
 
+  /**
+   * @param {import('estree').Pattern} id
+   * @param {import('estree').Expression | import('estree').Super | undefined | null} init
+   * @returns {boolean}
+   */
   function isRequireAssertDotStrict (id, init) {
     if (!isMemberExpression(init)) {
       return false;
@@ -164,43 +306,104 @@ function createVisitor (options) {
     return prop.name === 'strict';
   }
 
+  /**
+   * @param {import('estree').Pattern} id
+   * @param {import('estree').Expression | import('estree').Super | undefined | null} init
+   * @returns {boolean}
+   */
   function isRemovalTargetRequire (id, init) {
     return isRequireAssert(id, init) || isRequireAssertDotStrict(id, init);
   }
 
+  /**
+   * @param {import('estree').Expression | import('estree').Super} callee
+   * @returns {boolean}
+   */
   function isRemovalTargetAssertion (callee) {
     return isAssertionFunction(callee) || isAssertionMethod(callee) || isConsoleAssert(callee);
   }
 
+  /**
+   * @param {import('estree').Node} node
+   * @returns {void}
+   */
   function removeNode (node) {
     nodeUpdates.set(node, null);
   }
 
+  /**
+   * @param {import('estree').Node} node
+   * @returns {void}
+   */
   function replaceNode (node, replacement) {
     nodeUpdates.set(node, replacement);
   }
 
+  /**
+   * @param {import('acorn').Node} node
+   * @param {string} code
+   * @returns {{start: number; end: number;}}
+   */
+  function getStartAndEnd (node, code) {
+    let { start, end } = node;
+    while (/\s/.test(code[start - 1])) {
+      start -= 1;
+    }
+    if (isVariableDeclarator(node)) {
+      let newEnd = end;
+      while (/\s/.test(code[newEnd])) {
+        newEnd += 1;
+      }
+      if (/,/.test(code[newEnd])) {
+        end = newEnd + 1;
+      }
+    }
+    return { start, end };
+  }
+
+  /**
+   * @returns {{
+   * code: string;
+   * node: import('estree').Expression
+   * }}
+   */
   function createNoopExpression () {
     return {
-      type: 'UnaryExpression',
-      operator: 'void',
-      prefix: true,
-      argument: {
-        type: 'Literal',
-        value: 0,
-        raw: '0'
+      code: '(void 0)',
+      node: {
+        type: 'UnaryExpression',
+        operator: 'void',
+        prefix: true,
+        argument: {
+          type: 'Literal',
+          value: 0,
+          raw: '0'
+        }
       }
     };
   }
 
+  /**
+   * @returns {{
+   * code: string;
+   * node: import('estree').BlockStatement
+   * }}
+   */
   function createNoopStatement () {
     return {
-      type: 'BlockStatement',
-      body: []
+      code: '{}',
+      node: {
+        type: 'BlockStatement',
+        body: []
+      }
     };
   }
 
-  function unassertImportDeclaration (currentNode, parentNode) {
+  /**
+   * @this {import('estraverse').Controller}
+   * @param {import('estree').ImportDeclaration} currentNode
+   */
+  function unassertImportDeclaration (currentNode) {
     const source = currentNode.source;
     if (!(isAssertionModuleName(source))) {
       return;
@@ -212,6 +415,11 @@ function createVisitor (options) {
     registerAssertionVariables(currentNode);
   }
 
+  /**
+   * @this {import('estraverse').Controller}
+   * @param {import('estree').VariableDeclarator} currentNode
+   * @param {import('estree').VariableDeclaration} parentNode
+   */
   function unassertVariableDeclarator (currentNode, parentNode) {
     if (isRemovalTargetRequire(currentNode.id, currentNode.init)) {
       if (parentNode.declarations.length === 1) {
@@ -228,6 +436,11 @@ function createVisitor (options) {
     }
   }
 
+  /**
+   * @this {import('estraverse').Controller}
+   * @param {import('estree').AssignmentExpression} currentNode
+   * @param {import('estree').Node} parentNode
+   */
   function unassertAssignmentExpression (currentNode, parentNode) {
     if (currentNode.operator !== '=') {
       return;
@@ -244,6 +457,11 @@ function createVisitor (options) {
     }
   }
 
+  /**
+   * @this {import('estraverse').Controller}
+   * @param {import('estree').CallExpression} currentNode
+   * @param {import('estree').Node} parentNode
+   */
   function unassertCallExpression (currentNode, parentNode) {
     const callee = currentNode.callee;
     if (!isRemovalTargetAssertion(callee)) {
@@ -265,6 +483,11 @@ function createVisitor (options) {
     }
   }
 
+  /**
+   * @this {import('estraverse').Controller}
+   * @param {import('estree').AwaitExpression} currentNode
+   * @param {import('estree').Node} parentNode
+   */
   function unassertAwaitExpression (currentNode, parentNode) {
     const childNode = currentNode.argument;
     if (isExpressionStatement(parentNode) && isCallExpression(childNode)) {
@@ -279,6 +502,11 @@ function createVisitor (options) {
 
   return {
     enter: function (currentNode, parentNode) {
+      if (code && isAcornNode(currentNode)) {
+        code.addSourcemapLocation(currentNode.start);
+        code.addSourcemapLocation(currentNode.end);
+      }
+
       switch (currentNode.type) {
         case 'ImportDeclaration': {
           unassertImportDeclaration.bind(this)(currentNode, parentNode);
@@ -304,29 +532,108 @@ function createVisitor (options) {
     },
     leave: function (currentNode, parentNode) {
       const update = nodeUpdates.get(currentNode);
+
       if (update === undefined) {
         return undefined;
       }
+
       if (update === null) {
         if (isExpressionStatement(currentNode)) {
           const path = this.path();
-          const key = path[path.length - 1];
-          if (isNonBlockChildOfParentNode(currentNode, parentNode, key)) {
-            return createNoopStatement();
+          if (path) {
+            const key = path[path.length - 1];
+            if (parentNode && isNonBlockChildOfParentNode(currentNode, parentNode, key)) {
+              const replacement = createNoopStatement();
+              if (code && isAcornNode(currentNode)) {
+                const { start, end } = getStartAndEnd(currentNode, code.toString());
+                code.overwrite(start, end, replacement.code);
+              }
+              return replacement.node;
+            }
           }
         }
+
+        if (code && isAcornNode(currentNode)) {
+          const { start, end } = getStartAndEnd(currentNode, code.toString());
+          code.remove(start, end);
+        }
+
         this.remove();
         return undefined;
       }
-      return update;
+
+      if (code && isAcornNode(currentNode)) {
+        const { start, end } = getStartAndEnd(currentNode, code.toString());
+        code.overwrite(start, end, update.code);
+      }
+
+      return update.node;
     }
   };
 }
 
+/**
+ * @param {import('estree').Node} ast
+ * @param {import('./index.mjs').UnassertAstOptions} [options]
+ * @returns {import('estree').Node}
+ */
 function unassertAst (ast, options) {
   return estraverse.replace(ast, createVisitor(options));
 }
 
+/**
+ * @overload
+ * @param {string} code
+ * @param {import('estree').Node} ast
+ * @param {import('./index.mjs').UnassertCodeOptions} [options]
+ * @returns {import('./index.mjs').UnassertCodeResult}
+ */
+
+/**
+ * @overload
+ * @param {MagicString} code
+ * @param {import('estree').Node} ast
+ * @param {import('./index.mjs').UnassertCodeOptions} [options]
+ * @returns {MagicString}
+ */
+
+/**
+ * @param {string|MagicString} code
+ * @param {import('estree').Node} ast
+ * @param {import('./index.mjs').UnassertCodeOptions} [options]
+ * @returns {import('./index.mjs').UnassertCodeResult | MagicString}
+ */
+function unassertCode (code, ast, options) {
+  const {
+    sourceMap,
+    ...traverseOptions
+  } = options ?? {};
+  const usingMagic = code instanceof MagicString;
+  const magicCode = usingMagic ? code : new MagicString(code);
+
+  estraverse.traverse(ast, createVisitor({
+    ...traverseOptions,
+    code: magicCode
+  }));
+
+  if (usingMagic) {
+    return magicCode;
+  }
+
+  const unassertedCode = magicCode.toString();
+  const map = sourceMap
+    ? magicCode.generateMap(sourceMap === true ? undefined : sourceMap)
+    : null;
+
+  return {
+    code: unassertedCode,
+    map
+  };
+}
+
+/**
+ * @returns {import('./index.mjs').UnassertAstOptions}
+ */
 function defaultOptions () {
   return {
     modules: [
@@ -341,3 +648,4 @@ function defaultOptions () {
 exports.createVisitor = createVisitor;
 exports.defaultOptions = defaultOptions;
 exports.unassertAst = unassertAst;
+exports.unassertCode = unassertCode;
