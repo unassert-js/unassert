@@ -8,10 +8,8 @@
  * Licensed under the MIT license.
  *   https://github.com/unassert-js/unassert/blob/master/LICENSE
  */
-'use strict';
-
-const estraverse = require('estraverse');
-const MagicString = require('magic-string');
+import { replace, traverse } from 'estraverse';
+import MagicString from 'magic-string';
 
 function isAcornNode(node) {
   return typeof node === 'object' && node !== null && typeof node.start === 'number' && typeof node.end === 'number';
@@ -363,7 +361,7 @@ function createVisitor(options) {
   };
 }
 function unassertAst(ast, options) {
-  return estraverse.replace(ast, createVisitor(options));
+  return replace(ast, createVisitor(options));
 }
 function unassertCode(code, ast, options) {
   const {
@@ -372,7 +370,7 @@ function unassertCode(code, ast, options) {
   } = options ?? {};
   const usingMagic = code instanceof MagicString;
   const magicCode = usingMagic ? code : new MagicString(code);
-  estraverse.traverse(ast, createVisitor({
+  traverse(ast, createVisitor({
     ...traverseOptions,
     code: magicCode
   }));
@@ -392,7 +390,4 @@ function defaultOptions() {
   };
 }
 
-exports.createVisitor = createVisitor;
-exports.defaultOptions = defaultOptions;
-exports.unassertAst = unassertAst;
-exports.unassertCode = unassertCode;
+export { createVisitor, defaultOptions, unassertAst, unassertCode };
