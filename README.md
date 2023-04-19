@@ -349,6 +349,7 @@ AUTHOR
 CONTRIBUTORS
 ---------------------------------------
 * [Renée Kooi](https://github.com/goto-bus-stop)
+* [Jordan Harband](https://github.com/ljharb)
 
 
 LICENSE
