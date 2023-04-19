@@ -1,7 +1,7 @@
 {
   "name": "unassert",
   "description": "Encourages programming with assertions by providing tools to compile them away",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
