@@ -1,8 +1,15 @@
+### [2.0.2](https://github.com/unassert-js/unassert/releases/tag/v2.0.2) (2023-04-20)
+
+#### Bug Fixes
+
+* [Ensure tooling can access package.json](https://github.com/unassert-js/unassert/pull/46) by [@ljharb](https://github.com/ljharb)
+
+
 ### [2.0.1](https://github.com/unassert-js/unassert/releases/tag/v2.0.1) (2023-04-19)
 
 #### Bug Fixes
 
-* [fix "exports" for node 13.0-13.6](https://github.com/unassert-js/unassert/pull/41) by [@ljharb](https://github.com/ljharb)
+* [Fix "exports" for node 13.0-13.6](https://github.com/unassert-js/unassert/pull/41) by [@ljharb](https://github.com/ljharb)
 
 
 ## [2.0.0](https://github.com/unassert-js/unassert/releases/tag/v2.0.0) (2022-08-01)
