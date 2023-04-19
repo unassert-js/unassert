@@ -35,14 +35,17 @@
     "dist"
   ],
   "main": "./dist/index.cjs",
-  "exports": [
-    {
-      "import": "./src/index.mjs",
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.cjs"
-    },
-    "./dist/index.cjs"
-  ],
+  "exports": {
+    ".": [
+      {
+        "import": "./src/index.mjs",
+        "require": "./dist/index.cjs",
+        "default": "./dist/index.cjs"
+      },
+      "./dist/index.cjs"
+    ],
+    "./package.json": "./package.json"
+  },
   "homepage": "https://github.com/unassert-js/unassert",
   "keywords": [
     "DbC",
