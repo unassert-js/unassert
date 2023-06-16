@@ -72,6 +72,8 @@ function createVisitor (options) {
   const targetModules = new Set(config.modules);
   const targetVariables = new Set(config.variables);
 
+  const nodeUpdates = new WeakMap();
+
   function isAssertionModuleName (lit) {
     return isLiteral(lit) && targetModules.has(lit.value);
   }
@@ -170,105 +172,153 @@ function createVisitor (options) {
     return isAssertionFunction(callee) || isAssertionMethod(callee) || isConsoleAssert(callee);
   }
 
-  const nodeToRemove = new WeakSet();
+  function removeNode (node) {
+    nodeUpdates.set(node, null);
+  }
+
+  function replaceNode (node, replacement) {
+    nodeUpdates.set(node, replacement);
+  }
+
+  function createNoopExpression () {
+    return {
+      type: 'UnaryExpression',
+      operator: 'void',
+      prefix: true,
+      argument: {
+        type: 'Literal',
+        value: 0,
+        raw: '0'
+      }
+    };
+  }
+
+  function createNoopStatement () {
+    return {
+      type: 'BlockStatement',
+      body: []
+    };
+  }
+
+  function unassertImportDeclaration (currentNode, parentNode) {
+    const source = currentNode.source;
+    if (!(isAssertionModuleName(source))) {
+      return;
+    }
+    // remove current ImportDeclaration
+    removeNode(currentNode);
+    this.skip();
+    // register local identifier(s) as assertion variable
+    registerAssertionVariables(currentNode);
+  }
+
+  function unassertVariableDeclarator (currentNode, parentNode) {
+    if (isRemovalTargetRequire(currentNode.id, currentNode.init)) {
+      if (parentNode.declarations.length === 1) {
+        // remove parent VariableDeclaration
+        removeNode(parentNode);
+      } else {
+        // single var pattern
+        // remove current VariableDeclarator
+        removeNode(currentNode);
+      }
+      this.skip();
+      // register local identifier(s) as assertion variable
+      registerAssertionVariables(currentNode.id);
+    }
+  }
+
+  function unassertAssignmentExpression (currentNode, parentNode) {
+    if (currentNode.operator !== '=') {
+      return;
+    }
+    if (!isExpressionStatement(parentNode)) {
+      return;
+    }
+    if (isRemovalTargetRequire(currentNode.left, currentNode.right)) {
+      // remove parent ExpressionStatement
+      removeNode(parentNode);
+      this.skip();
+      // register local identifier(s) as assertion variable
+      registerAssertionVariables(currentNode.left);
+    }
+  }
+
+  function unassertCallExpression (currentNode, parentNode) {
+    const callee = currentNode.callee;
+    if (!isRemovalTargetAssertion(callee)) {
+      return;
+    }
+
+    switch (parentNode.type) {
+      case 'ExpressionStatement': {
+        // remove parent ExpressionStatement
+        removeNode(parentNode);
+        this.skip();
+        break;
+      }
+      case 'SequenceExpression': {
+        // replace the asserstion with essentially nothing
+        replaceNode(currentNode, createNoopExpression());
+        break;
+      }
+    }
+  }
+
+  function unassertAwaitExpression (currentNode, parentNode) {
+    const childNode = currentNode.argument;
+    if (isExpressionStatement(parentNode) && isCallExpression(childNode)) {
+      const callee = childNode.callee;
+      if (isRemovalTargetAssertion(callee)) {
+        // remove parent ExpressionStatement
+        removeNode(parentNode);
+        this.skip();
+      }
+    }
+  }
 
   return {
     enter: function (currentNode, parentNode) {
       switch (currentNode.type) {
         case 'ImportDeclaration': {
-          const source = currentNode.source;
-          if (!(isAssertionModuleName(source))) {
-            return;
-          }
-          // remove current ImportDeclaration
-          nodeToRemove.add(currentNode);
-          this.skip();
-          // register local identifier(s) as assertion variable
-          registerAssertionVariables(currentNode);
+          unassertImportDeclaration.bind(this)(currentNode, parentNode);
           break;
         }
         case 'VariableDeclarator': {
-          if (isRemovalTargetRequire(currentNode.id, currentNode.init)) {
-            if (parentNode.declarations.length === 1) {
-              // remove parent VariableDeclaration
-              nodeToRemove.add(parentNode);
-            } else {
-              // single var pattern
-              // remove current VariableDeclarator
-              nodeToRemove.add(currentNode);
-            }
-            this.skip();
-            // register local identifier(s) as assertion variable
-            registerAssertionVariables(currentNode.id);
-          }
+          unassertVariableDeclarator.bind(this)(currentNode, parentNode);
           break;
         }
         case 'AssignmentExpression': {
-          if (currentNode.operator !== '=') {
-            return;
-          }
-          if (!isExpressionStatement(parentNode)) {
-            return;
-          }
-          if (isRemovalTargetRequire(currentNode.left, currentNode.right)) {
-            // remove parent ExpressionStatement
-            nodeToRemove.add(parentNode);
-            this.skip();
-            // register local identifier(s) as assertion variable
-            registerAssertionVariables(currentNode.left);
-          }
+          unassertAssignmentExpression.bind(this)(currentNode, parentNode);
           break;
         }
         case 'CallExpression': {
-          if (!isExpressionStatement(parentNode)) {
-            return;
-          }
-          const callee = currentNode.callee;
-          if (isRemovalTargetAssertion(callee)) {
-            // remove parent ExpressionStatement
-            nodeToRemove.add(parentNode);
-            this.skip();
-          }
+          unassertCallExpression.bind(this)(currentNode, parentNode);
           break;
         }
         case 'AwaitExpression': {
-          const childNode = currentNode.argument;
-          if (isExpressionStatement(parentNode) && isCallExpression(childNode)) {
-            const callee = childNode.callee;
-            if (isRemovalTargetAssertion(callee)) {
-              // remove parent ExpressionStatement
-              nodeToRemove.add(parentNode);
-              this.skip();
-            }
-          }
+          unassertAwaitExpression.bind(this)(currentNode, parentNode);
           break;
         }
       }
     },
     leave: function (currentNode, parentNode) {
-      switch (currentNode.type) {
-        case 'ImportDeclaration':
-        case 'VariableDeclarator':
-        case 'VariableDeclaration':
-        case 'ExpressionStatement':
-          break;
-        default:
-          return undefined;
+      const update = nodeUpdates.get(currentNode);
+      if (update === undefined) {
+        return undefined;
       }
-      if (nodeToRemove.has(currentNode)) {
+      if (update === null) {
         if (isExpressionStatement(currentNode)) {
           const path = this.path();
           const key = path[path.length - 1];
           if (isNonBlockChildOfParentNode(currentNode, parentNode, key)) {
-            return {
-              type: 'BlockStatement',
-              body: []
-            };
+            return createNoopStatement();
           }
         }
         this.remove();
+        return undefined;
       }
-      return undefined;
+      return update;
     }
   };
 }
