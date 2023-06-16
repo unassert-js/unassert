@@ -19,7 +19,8 @@
     }
   ],
   "dependencies": {
-    "estraverse": "^5.0.0"
+    "estraverse": "^5.0.0",
+    "magic-string": "^0.30.0"
   },
   "devDependencies": {
     "@twada/benchmark-commits": "^0.1.0",
