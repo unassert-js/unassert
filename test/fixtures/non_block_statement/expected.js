@@ -15,5 +15,5 @@ function add(a, b) {
             b
         ]) {
     }
-    return a + b;
+    return a + (void 0, b);
 }

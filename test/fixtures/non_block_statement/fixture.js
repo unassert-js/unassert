@@ -21,5 +21,5 @@ function add (a, b) {
     for (const i of [a, b])
       assert (0 < i);
 
-    return a + b;
+    return a + (assert(a > b), b);
 }
